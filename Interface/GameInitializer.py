@@ -24,29 +24,40 @@ def getTableDimensions(maxDim:int):
 
     return (dim)
 
-def initializeEmptyMatrixState(rowDim:int, colDim:int):
-    emptyMatrix = []
-    for i in range (0, rowDim):
-        emptyMatrix.append([])
-        for j in range(0,colDim):
-            emptyMatrix[i].append(" ")
-    return emptyMatrix
+def makeBegginingStacks(n):
+    flag = 0
+    stekovi = []
+    dim = int(n /2)
+        
+    for i in range(0, n * dim):
+        stek = Stack()
+        stekovi.append(stek)
+        if i < dim or i >= (n-1)* dim :
+             stek.makeBeginingStack(".")
+        
+        elif flag == 0:
+            stek.makeBeginingStack("X")
+        else :
+            stek.makeBeginingStack("Y")
+        if i % 4 == 3:
+            flag = not flag
+    
+    return stekovi
 
-def initializeGameState(Dim:int, whoPlaysFirst:str):
+def initializeGameState(dim:int, whoPlaysFirst:str):
     state:GameState = GameState()
     state.playerSign = "X" if whoPlaysFirst == "me" else "O"
     state.cpuSign = "X" if whoPlaysFirst == "cpu" else "O"
     state.currentTurn = "X"
-    state.rowDim = Dim
-    state.colDim = Dim
-    state.stateMatrix = initializeEmptyMatrixState(rowDim, colDim)
+    state.dimension = dim
+    state.stekovi = makeBegginingStacks(dim)
     
     return state
 
-def intializeGame(maxRowDimension:int, maxColDimension:int):
+def intializeGame(maxDimension:int):
     printWelcomeText()
     whoPlaysFirst = getWhoPlaysFirst()
-    dimensions = getTableDimensions(maxRowDimension, maxColDimension)
+    dimensions = getTableDimensions(maxDimension) #moram da pogledam gde se ovo postavlja
     return initializeGameState(dimensions, whoPlaysFirst)
 
 
@@ -96,25 +107,6 @@ def generateLetters(n):
     array_of_letters = [chr(start_char + i) for i in range(n)]
     return array_of_letters
     
-def makeStacks(n):
-    flag = 0
-    stekovi = []
-    dim = int(n /2)
-        
-    for i in range(0, n * dim):
-        stek = Stack()
-        stekovi.append(stek)
-        if i < dim or i >= (n-1)* dim :
-             stek.makeBeginingStack(".")
-        
-        elif flag == 0:
-            stek.makeBeginingStack("X")
-        else :
-            stek.makeBeginingStack("Y")
-        if i % 4 == 3:
-            flag = not flag
-    
-    return stekovi
     
 def printWholeTable(n, stekovi):
   
