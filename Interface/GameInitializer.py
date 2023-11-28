@@ -16,7 +16,7 @@ def getTableDimensions(maxDim:int):
     
     dim = -1
     #parno, maks 16, valjda ne moze manje od 4 zbog onog da treba prva dva steka na pocetku da su prazna, a i ovaj uslov da broj figurica mora da je deljiv sa 8
-    while(dim < 4 or dim > maxDim or dim % 2 != 0 or ((int(dim/2) * (n-2)) % 8 != 0)):
+    while(dim < 4 or dim > maxDim or dim % 2 != 0 or ((int(dim/2) * (dim-2)) % 8 != 0)):
         try:
             dim = int(input(colored("Enter the number of rows: ", 'cyan')))
         except:
