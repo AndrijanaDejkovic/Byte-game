@@ -1,3 +1,5 @@
+from ImportedScripts.CMDTextColorizer.ColorizeText import colored
+
 from Stack import Stack
 def printWelcomeText():
     print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
