@@ -70,10 +70,10 @@ def playTurnWithInputs(state:GameState):
             rowInput = getValidIntInput(0, newState.dimension, "ROW (1,2,3)")
             colInput = getValidCharToIntInput(0, newState.dimension, "COLUMN (A,B,C)")
 
-            if not isHorizontalMoveValid(newState.stateMatrix, newState.colDim, (rowInput, colInput)):
-                print(colored("You can't place a domino here, try again!", 'red', attrs=['bold']))
-            else:
-                break
+           # if not isHorizontalMoveValid(newState.stateMatrix, newState.colDim, (rowInput, colInput)):
+           #     print(colored("You can't place a domino here, try again!", 'red', attrs=['bold']))
+           # else:
+           #     break
 
         newState.stateMatrix[rowInput][colInput] = "O"
         newState.stateMatrix[rowInput][colInput+1] = "O"
