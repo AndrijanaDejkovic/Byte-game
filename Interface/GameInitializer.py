@@ -10,26 +10,19 @@ def getWhoPlaysFirst():
         whoPlaysFirst = input(colored("Who do you want to play first? Type me/cpu: ", 'cyan')).lower()
     return whoPlaysFirst
 
-def getTableDimensions(maxRowDim:int, maxColDim:int):
+def getTableDimensions(maxDim:int):
     print(colored("\nLet's create the table!", 'yellow'))
-    print(f' Tip: Recommended dimensions are 8x8\n Rule: Max dimensions are {maxRowDim}x{maxColDim}, Minimum dimensions are 5x5!\n')
+    print(f' Tip: Recommended dimensions are 8x8\n Rule: Max dimensions are {maxDim}x{maxDim}, Minimum dimensions are 5x5!\n')
     
-    rows = -1
-    cols = -1
-    #promenjeno na <1 zbog testa, bilo <5
-    while(rows < 1 or rows > maxRowDim):
+    dim = -1
+    #parno, maks 16, valjda ne moze manje od 4 zbog onog da treba prva dva steka na pocetku da su prazna, a i ovaj uslov da broj figurica mora da je deljiv sa 8
+    while(dim < 4 or dim > maxDim or dim % 2 != 0 or ((int(dim/2) * (n-2)) % 8 != 0)):
         try:
-            rows = int(input(colored("Enter the number of rows: ", 'cyan')))
+            dim = int(input(colored("Enter the number of rows: ", 'cyan')))
         except:
             print(colored("Invalid input", 'red', attrs=['bold']))
 
-    while(cols < 1 or cols > maxColDim):
-        try:
-            cols = int(input(colored("Enter the number of columns: ", 'cyan')))
-        except:
-            print(colored("Invalid input", 'red', attrs=['bold']))
-
-    return (rows, cols)
+    return (dim)
 
 def initializeEmptyMatrixState(rowDim:int, colDim:int):
     emptyMatrix = []
@@ -39,13 +32,13 @@ def initializeEmptyMatrixState(rowDim:int, colDim:int):
             emptyMatrix[i].append(" ")
     return emptyMatrix
 
-def initializeGameState(rowDim:int, colDim:int, whoPlaysFirst:str):
+def initializeGameState(Dim:int, whoPlaysFirst:str):
     state:GameState = GameState()
     state.playerSign = "X" if whoPlaysFirst == "me" else "O"
     state.cpuSign = "X" if whoPlaysFirst == "cpu" else "O"
     state.currentTurn = "X"
-    state.rowDim = rowDim
-    state.colDim = colDim
+    state.rowDim = Dim
+    state.colDim = Dim
     state.stateMatrix = initializeEmptyMatrixState(rowDim, colDim)
     
     return state
@@ -54,7 +47,7 @@ def intializeGame(maxRowDimension:int, maxColDimension:int):
     printWelcomeText()
     whoPlaysFirst = getWhoPlaysFirst()
     dimensions = getTableDimensions(maxRowDimension, maxColDimension)
-    return initializeGameState(dimensions[0], dimensions[1], whoPlaysFirst)
+    return initializeGameState(dimensions, whoPlaysFirst)
 
 
 #andrijana
