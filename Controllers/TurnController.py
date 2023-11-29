@@ -66,13 +66,14 @@ def getValidFieldColumn():
 
 #provera da li je stek na tom polju prazan, ako jeste zahteva ponovno unošenje indeksa
 def getValidPosition(col:int, row:int):
-    #move = input(colored(f"Enter the level of the coin you want to move: ",'yellow')).upper()
-
+    
     while is_empty(stekovi[row, col]):
         print(colored("Invalid stack! Please enter a not-empty stack index.",'red'))
-        #move = input(colored(f"Enter the index ({possible_letters[0]}-{possible_letters[-1]}): ",'yellow')).upper()
         getValidFieldRow()
         getValidFieldColumn()
+
+#proverava da li postoji nesto na zadatom indeksu u zadatom steku
+
 
 
 def playTurnWithInputs(state:GameState):
