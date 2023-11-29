@@ -40,7 +40,7 @@ def makeBegginingStacks(n):
              continue
         
         elif flag == 0:
-            stek.makeBeginingStack("Y")
+            stek.makeBeginingStack("O")
         else :
             stek.makeBeginingStack("X")
         if i % dim == (dim - 1):
@@ -63,6 +63,7 @@ def intializeGame(maxDimension:int):
     whoPlaysFirst = getWhoPlaysFirst()
     dimensions = getTableDimensions(maxDimension) 
     return initializeGameState(dimensions, whoPlaysFirst)
+
 
 
 
