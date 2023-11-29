@@ -1,7 +1,7 @@
 from numpy import copy
 from Controllers.GameState import GameState
 from ImportedScripts.CMDTextColorizer.ColorizeText import colored
-#from Interface.Stack import is_empty
+from Interface.Stack import is_empty
 state:GameState = GameState()
 #??
 def getNumberFromASCII(asciiChar):
@@ -67,7 +67,7 @@ def getValidFieldColumn():
 #provera da li je stek na tom polju prazan, ako jeste zahteva ponovno unošenje indeksa
 def getValidPosition(col:int, row:int):
     
-    while is_empty(stekovi[row, col]):
+    while is_empty(state.stekovi[row, col]):
         print(colored("Invalid stack! Please enter a not-empty stack index.",'red'))
         getValidFieldRow()
         getValidFieldColumn()
