@@ -1,6 +1,6 @@
 from Controllers.GameState import GameState
 from ImportedScripts.TextColorizer.ColorizeText import colored
-
+#from GameInitializer import is_empty
 from Interface.Stack import Stack
 def printWelcomeText():
     print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
@@ -63,6 +63,24 @@ def intializeGame(maxDimension:int):
     whoPlaysFirst = getWhoPlaysFirst()
     dimensions = getTableDimensions(maxDimension) 
     return initializeGameState(dimensions, whoPlaysFirst)
+
+
+def gameIsOver():
+    state:GameState = GameState()
+    j:int
+    j=len(state.stekovi)
+    gameOver:bool=True
+    for stek in state.stekovi:
+        if len(stek.array)==0:
+           gameOver=False
+    if((state.playerScore<=len(state.stekovi)/2) or (state.cpuScore<=len(state.stekovi)/2)):
+        gameOver=False
+    if(gameOver==True):
+        print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
+        print(colored(" GAME IS OVER! ", 'red', attrs=['bold']))
+        print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
+
+    
 
 
 
