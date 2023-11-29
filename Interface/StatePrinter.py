@@ -28,7 +28,26 @@ def printRow(dim, prvoStack, stekRowCounter, stekcounter, state):
     return str
 
 def printStackRow(stek, row):
-    return f"{stek.array[row * 3 + 2]} {stek.array[row * 3 + 1]} {stek.array[row * 3]} "
+    a, b, c = ".", ".", "."  # Initialize variables with default values
+
+    # Adjust row based on conditions
+    if row == 2:
+        row = 0
+    elif row == 0:
+        row = 2
+
+    print(len(stek.array))
+
+    if len(stek.array) > (row * 3 + 2):
+        a = stek.array[row * 3 + 2]
+
+    if len(stek.array) > (row * 3 + 1):
+        b = stek.array[row * 3 + 1]
+
+    if len(stek.array) > (row * 3):
+        c = stek.array[row * 3]
+
+    return f"{c} {b} {a}"
     #stampa se drugim redosledom, znaci elementi od 1-9. pozicije idu ovako
     #987
     #654

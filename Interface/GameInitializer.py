@@ -37,7 +37,7 @@ def makeBegginingStacks(n):
         stek = Stack()
         stekovi.append(stek)
         if i < dim or i >= (n-1)* dim :
-             stek.makeBeginingStack(".")
+             continue
         
         elif flag == 0:
             stek.makeBeginingStack("Y")

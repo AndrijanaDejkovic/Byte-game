@@ -11,7 +11,7 @@ class Stack:
         else:
             print("Stack overflow, cannot push onto a full stack")
 
-#dodavanje na stek
+#brisanje sa steka
     def pop(self):
         if self.is_empty():
             print("Stack underflow, cannot pop from an empty stack")
@@ -35,4 +35,4 @@ class Stack:
         
 #inicijalno stanje steka
     def makeBeginingStack(self, element):
-        self.array = [".", ".", ".",".",".", ".",".",".",element]
+        self.push(element)
