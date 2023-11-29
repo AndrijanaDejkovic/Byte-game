@@ -36,7 +36,7 @@ def printStackRow(stek, row):
     elif row == 0:
         row = 2
 
-    print(len(stek.array))
+    #print(len(stek.array))
 
     if len(stek.array) > (row * 3 + 2):
         a = stek.array[row * 3 + 2]

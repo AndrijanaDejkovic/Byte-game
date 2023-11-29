@@ -7,7 +7,7 @@ class Stack:
     def push(self, value):
         if len(self.array) < self.dimension:
             self.array.append(value)
-            print(f"Pushed {value} onto the stack")
+            #print(f"Pushed {value} onto the stack")
         else:
             print("Stack overflow, cannot push onto a full stack")
 
@@ -36,3 +36,5 @@ class Stack:
 #inicijalno stanje steka
     def makeBeginingStack(self, element):
         self.push(element)
+
+
