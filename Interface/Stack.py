@@ -3,6 +3,7 @@ class Stack:
         self.array = []
         self.dimension = 9
 
+#dodavanje na stek
     def push(self, value):
         if len(self.array) < self.dimension:
             self.array.append(value)
@@ -10,6 +11,7 @@ class Stack:
         else:
             print("Stack overflow, cannot push onto a full stack")
 
+#dodavanje na stek
     def pop(self):
         if self.is_empty():
             print("Stack underflow, cannot pop from an empty stack")
@@ -21,12 +23,16 @@ class Stack:
 
     def is_empty(self):
         return len(self.array) == 0
+    
 
+#vidi vrh steka
     def peek(self):
         if self.is_empty():
             print("Cannot peek, the stack is empty")
             return None
         else:
             return self.array[-1]
+        
+#inicijalno stanje steka
     def makeBeginingStack(self, element):
         self.array = [".", ".", ".",".",".", ".",".",".",element]
