@@ -74,3 +74,5 @@ def printWholeTable(state:GameState) -> None:
             stekRowCounter = 0
             stekcounter+=1
     print(row)
+    print(f"{state.playerSign} : {state.playerScore}")
+    print(f"{state.cpuSign} : {state.cpuScore}")

@@ -1,7 +1,7 @@
 from numpy import copy
 from Controllers.GameState import GameState
 from ImportedScripts.CMDTextColorizer.ColorizeText import colored
-from Interface.Stack import is_empty
+#from Interface.Stack import is_empty
 state:GameState = GameState()
 #??
 def getNumberFromASCII(asciiChar):
