@@ -39,10 +39,10 @@ def makeBegginingStacks(n):
              stek.makeBeginingStack(".")
         
         elif flag == 0:
-            stek.makeBeginingStack("X")
-        else :
             stek.makeBeginingStack("Y")
-        if i % 4 == 3:
+        else :
+            stek.makeBeginingStack("X")
+        if i % dim == (dim - 1):
             flag = not flag
     
     return stekovi
