@@ -1,7 +1,7 @@
 from numpy import copy
 from Controllers.GameState import GameState
 from ImportedScripts.CMDTextColorizer.ColorizeText import colored
-from Interface.Stack import is_empty
+
 state:GameState = GameState()
 #??
 def getNumberFromASCII(asciiChar):
@@ -74,34 +74,141 @@ def getValidPosition(col:int, row:int):
 
 #proverava da li postoji nesto na zadatom indeksu u zadatom steku
 
+#da li ima stacka na tom polju
+def isPositionValid(dim:int,position:tuple,stekovi:list):
+    row = position[0] #broj
+    col = position[1] #slovo
+
+    if row < 0 or row >= dim - 1:
+        return False
+    elif(row+col)%2!=0:    #ako nema stackova na tom polju
+        return False
+    elif stekovi[(col*4)+row//2].is_empty(): #ako nema sta da se skine sa stacka
+        return False
+    return True
+
+#da li ima figurice na zadatom mestu u stacku
+def isStackPosValid(stackInput:int,dim:int,position:tuple,stekovi:list):
+    row = position[0] #broj
+    col = position[1] #slovo
+
+    if row < 0 or row >= dim - 1:
+        return False
+    elif len(stekovi[(col*4)+row//2])==0: #ako nema sta da se skine sa stacka
+        return False
+    elif len(stekovi[(col*4)+row//2])<=stackInput:
+        return False
+    return True
+
+#da li moze da se izvrsi pokret
+def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
+    row = position[0] #broj
+    col = position[1] #slovo
+
+    if moveInput=='GL':
+        if not isPositionValid(rowDim,(row-1,col-1)):
+            return False
+        #kolko se prenosi iz stacka(row,col) na stack u GL
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col)),(row-1,col-1)):
+            return False
+        else:
+            return True
+    elif moveInput=='GD':
+        if not isPositionValid(rowDim,(row+1,col-1)):
+            return False
+        #kolko se prenosi iz stacka(row,col) na stack u GD
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col)),(row+1,col-1)):
+            return False
+        else:
+            return True
+    elif moveInput=='DL':
+        if not isPositionValid(rowDim,(row-1,col+1)):
+            return False
+    #kolko se prenosi iz stacka(row,col) na stack u DL
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col)),(row-1,col+1)):
+            return False
+        else:
+            return True
+    elif moveInput=='GD':
+        if not isPositionValid(rowDim,(row+1,col+1)):
+            return False
+    #kolko se prenosi iz stacka(row,col) na stack u GD
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col)),(row+1,col+1)):
+            return False
+        else:
+            return True
+
+
+#da li stack moze da primi n broj figura
+def StackCapacity(adding:int,position:tuple):
+    row = position[0] #broj
+    col = position[1] #slovo
+
+    if len(state.stekovi[(col*4)+row//2])+adding >8:
+        return False
+    return True
+
+
+
+#kolko figura se prenosi
+def HowMuchFromStack(stackInput:int,position:tuple):
+    row = position[0] #broj
+    col = position[1] #slovo
+
+    return len(state.stekovi[(col*4)+row//2])-stackInput
+
+
+    
 
 
 def playTurnWithInputs(state:GameState):
     rowInput = -1
     colInput = chr(0)
+    stackInput=-1
+    moveInput= chr(0)
 
     print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
     
     #nova istanca stanja
     newState = GameState()
-    newState = copy.deepcopy(state)
+    newState.playerSign = state.playerSign
+    newState.cpuSign = state.cpuSign
+    newState.currentTurn = state.currentTurn
+    newState.dimension = state.dimension
+    newState.maxDimension = state.maxDimension
+    newState.playerScore = state.playerScore
+    newState.cpuScore = state.cpuScore
+    # Kopiranje stekova - moguće je napraviti kopiju stekova jedan po jedan ili prilagoditi njihovo kopiranje
+    newState.stekovi = [elem for elem in state.stekovi]
+
 
     if newState.currentTurn == "X":
         while(True):
             # Send rowDim instead of rowDim-1 because row at the table that user sees starts from 1
             rowInput = getValidIntInput(0, newState.dimension, "row (1,2,3...)")
             colInput = getValidCharToIntInput(0, newState.dimension, "column (A,B,C...)")
+
+            if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
+                print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
+            else:
+                break
             stackInput=getValidIntInput(-1,8,"stack")   #0 do 7
+            
+            if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput),newState.stekovi):
+                print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
+            else:
+                break
+
             moveInput=getValidMoveInput()
 
-        #    if not isMoveValid(newState.stateMatrix, newState.dimension, (rowInput, colInput)):
-        #        print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
-        #    else:
-        #        break
+            if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput):
+                print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
+            else:
+                break
 
-        newState.stateMatrix[rowInput][colInput] = "X"
-        newState.stateMatrix[rowInput+1][colInput] = "X"
-        newState.lastPlayedX = [rowInput, colInput]
+     #   newState.stateMatrix[rowInput][colInput] = "X"
+     #   newState.stateMatrix[rowInput+1][colInput] = "X"
+     #   newState.lastPlayedX = [rowInput, colInput]
 
     elif state.currentTurn == "O":
         while(True):
@@ -130,17 +237,17 @@ def playValidTurnInstantly(state:GameState, row, col):
     newState = GameState()
     newState = copy.deepcopy(state)
 
-    if newState.currentTurn == "X":
-        newState.stateMatrix[row][col] = "X"
-        newState.stateMatrix[row + 1][col] = "X"
-        newState.lastPlayedX = [row, col]
-
-    elif state.currentTurn == "O":
-        newState.stateMatrix[row][col] = "O"
-        newState.stateMatrix[row][col + 1] = "O"
-        newState.lastPlayedO = [row, col]
-
-    newState.currentTurn = "O" if newState.currentTurn == "X" else "X"
-    newState.lastPlayedMove = [row, col]
-
-    return newState
+ #   if newState.currentTurn == "X":
+ #       newState.stateMatrix[row][col] = "X"
+ #       newState.stateMatrix[row + 1][col] = "X"
+ #       newState.lastPlayedX = [row, col]
+#
+ #   elif state.currentTurn == "O":
+ #       newState.stateMatrix[row][col] = "O"
+ #       newState.stateMatrix[row][col + 1] = "O"
+ #       newState.lastPlayedO = [row, col]
+#
+ #   newState.currentTurn = "O" if newState.currentTurn == "X" else "X"
+ #   newState.lastPlayedMove = [row, col]
+#
+ #   return newState
