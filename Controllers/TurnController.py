@@ -81,11 +81,19 @@ def isPositionValid(dim:int,position:tuple,stekovi:list):
     row = position[0] #slovo
     col = position[1] #broj
 
-    if row < 0 or row >= dim - 1:
+    x = int(dim/2)
+    y = col + 2
+    
+    print(f"OVO JE Y{y} a stek je : {((row)*x)+y//2 - 1}")
+
+    if row < 0 or row > dim - 1:
+        print("NASTANAK1")
         return False
     elif(row+col)%2!=0:    #ako nema stackova na tom polju
+        print("NASTANAK2")
         return False
-    elif stekovi[(row*4)+col//2].is_empty(): #ako nema sta da se skine sa stacka
+    elif stekovi[((row)*x)+y//2 - 1].is_empty(): #ako nema sta da se skine sa stacka
+        print(f"NASTANAK3 {((row)*x)+y//2 - 1}")
         return False
     return True
 
@@ -93,17 +101,26 @@ def isPositionValid(dim:int,position:tuple,stekovi:list):
 def isStackPosValid(stackInput:int,dim:int,position:tuple,stekovi:list):
     row = position[0] #slovo
     col = position[1] #broj
+    x = int(dim/2)
+    y = col + 2
+    
+    print(f"da li je dobra pozicija steka : {((row)*x)+y//2 - 1}")
+    print(f"a evo su dimenzije : x {row}, y : {col}")
+    print(f"stak input : {stackInput}, a duzina steka : {stekovi[((row)*x)+y//2 - 1].stackLen()}")
 
-    if row < 0 or row >= dim - 1:
+    if row < 0 or row > dim - 1:
+        print("Kaze da je van")
         return False
-    elif stekovi[(row*4)+col//2].stackLen()==0: #ako nema sta da se skine sa stacka
+    elif stekovi[((row)*x)+y//2 - 1].stackLen()==0: #ako nema sta da se skine sa stacka
+        print("Kaze da je prazan")
         return False
-    elif stekovi[(row*4)+col//2].stackLen()<=stackInput:
+    elif stekovi[((row)*x)+y//2 - 1].stackLen()<= stackInput:
+        print("Kaze da ima manje elemenata")
         return False
     return True
 
 #da li moze da se izvrsi pokret
-def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
+def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, dim : int):
     row = position[0] #slovo
     col = position[1] #broj
 
@@ -111,7 +128,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
         if not isPositionValid(rowDim,(row-1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GL
-        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi),(row-1,col-1), stekovi):
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row-1,col-1), stekovi, rowDim):
             return False
         else:
             return True
@@ -119,7 +136,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
         if not isPositionValid(rowDim,(row+1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GD
-        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi),(row+1,col-1), stekovi):
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row+1,col-1), stekovi, rowDim):
             return False
         else:
             return True
@@ -127,7 +144,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
         if not isPositionValid(rowDim,(row-1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u DL
-        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi),(row-1,col+1), stekovi):
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row-1,col+1), stekovi, rowDim):
             return False
         else:
             return True
@@ -135,44 +152,56 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
         if not isPositionValid(rowDim,(row+1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u GD
-        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi),(row+1,col+1), stekovi):
+        elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row+1,col+1), stekovi, rowDim):
             return False
         else:
             return True
 
 
 #da li stack moze da primi n broj figura
-def StackCapacity(adding:int,position:tuple, stekovi:list):
+def StackCapacity(adding:int,position:tuple, stekovi:list, dim:int):
     row = position[0] #slovo
     col = position[1] #broj
+    x = int(dim/2)
+    y = col + 2
 
-    if stekovi[(row*4)+col//2].stackLen()+adding >8:
+
+    if stekovi[((row)*x)+y//2 - 1].stackLen()+adding >8:
         return False
     return True
 
 
 
 #kolko figura se prenosi
-def HowMuchFromStack(stackInput:int,position:tuple, stekovi:list):
+def HowMuchFromStack(stackInput:int,position:tuple, stekovi:list, dim:int):
     row = position[0] #slovo
     col = position[1] #broj
-    pom =stekovi[(row*4)+col//2].stackLen()
+    x = int(dim/2)
+    y = col + 2
+
+
+    pom =stekovi[((row)*x)+y//2 - 1].stackLen()
     return pom-stackInput
 
-def transferFromStack(position:tuple, stekovi:list, stackInput:int,moveInput):
+def transferFromStack(position:tuple, stekovi:list, stackInput:int,moveInput, dim:int):
      row = position[0] #slovo
      col = position[1] #broj
      positionNew=newPostionCalc(position, moveInput)
      rowNew=positionNew[0]
      colNew=positionNew[1]
      transfer=[]
-     for i in range (HowMuchFromStack(stackInput, position, stekovi)):
-           transfer.append(stekovi[(row*4)+col//2].pop())
+     x = int(dim/2)
+     y = col + 2
+     print(f"u transferu pozicija : {((rowNew)*x)+y//2 - 1}")
+
+
+     for i in range (HowMuchFromStack(stackInput, position, stekovi, dim)):
+           transfer.append(stekovi[((row)*x)+y//2 - 1].pop())
      for i in range (1, len(transfer)+1):
-         if(stekovi[(rowNew*4)+colNew//2].is_empty()):
-             stekovi[(rowNew*4)+colNew//2].makeBegginingStack(transfer[-i])
+         if(stekovi[((rowNew)*x)+y//2 - 1].is_empty()):
+             stekovi[((rowNew)*x)+y//2 - 1].push(transfer[-i])
          else:
-             stekovi[(rowNew*4)+colNew//2].push(transfer[-i])
+             stekovi[((rowNew)*x)+y//2 - 1].push(transfer[-i])
     
     
     
@@ -242,18 +271,18 @@ def playTurnWithInputs(state:GameState):
                 
                 moveInput=getValidMoveInput()
 
-                if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput):
+                if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput, newState.dimension):
                     print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
                     continue
                 
                 else: break
 
             #push i pop 
-            transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput)
+            transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput, newState.dimension)
             state.stekovi=newState.stekovi
             state.currentTurn = "O"
             gameIsOver()
-            printWholeTable(state)
+            printWholeTable(newState)
 
 
         elif state.currentTurn == "O":
@@ -276,14 +305,14 @@ def playTurnWithInputs(state:GameState):
                 
                 moveInput=getValidMoveInput()
 
-                if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput):
+                if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput, newState.dimension):
                     print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
                     continue
                 
                 else: break
 
             #push i pop 
-            transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput)
+            transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput, newState.dimension)
             state.stekovi=newState.stekovi
             state.currentTurn = "X"
             gameIsOver()
