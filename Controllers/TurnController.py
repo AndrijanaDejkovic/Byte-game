@@ -192,7 +192,7 @@ def playTurnWithInputs(state:GameState):
 
             moveInput=getValidMoveInput()
 
-            if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput):
+            if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput):
                 print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
             else:
                 break
