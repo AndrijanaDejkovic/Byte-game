@@ -1,7 +1,7 @@
 from numpy import copy
 from Controllers.GameState import GameState
 from ImportedScripts.CMDTextColorizer.ColorizeText import colored
-from Interface.Stack import is_empty
+
 state:GameState = GameState()
 #??
 def getNumberFromASCII(asciiChar):
@@ -75,7 +75,7 @@ def getValidPosition(col:int, row:int):
 #proverava da li postoji nesto na zadatom indeksu u zadatom steku
 
 #da li ima stacka na tom polju
-def isPositionValid(dim:int,position:tuple):
+def isPositionValid(dim:int,position:tuple,stekovi:list):
     row = position[0] #broj
     col = position[1] #slovo
 
@@ -83,20 +83,20 @@ def isPositionValid(dim:int,position:tuple):
         return False
     elif(row+col)%2!=0:    #ako nema stackova na tom polju
         return False
-    elif state.stekovi[(col*4)+row/2].is_empty: #ako nema sta da se skine sa stacka
+    elif stekovi[(col*4)+row//2].is_empty(): #ako nema sta da se skine sa stacka
         return False
     return True
 
 #da li ima figurice na zadatom mestu u stacku
-def isStackPosValid(stackInput:int,dim:int,position:tuple):
+def isStackPosValid(stackInput:int,dim:int,position:tuple,stekovi:list):
     row = position[0] #broj
     col = position[1] #slovo
 
     if row < 0 or row >= dim - 1:
         return False
-    elif state.stekovi[(col*4)+row/2].is_empty: #ako nema sta da se skine sa stacka
+    elif len(stekovi[(col*4)+row//2])==0: #ako nema sta da se skine sa stacka
         return False
-    elif len(state.stekovi[(col*4)+row/2])<=stackInput:
+    elif len(stekovi[(col*4)+row//2])<=stackInput:
         return False
     return True
 
@@ -144,7 +144,7 @@ def StackCapacity(adding:int,position:tuple):
     row = position[0] #broj
     col = position[1] #slovo
 
-    if len(state.stekovi[(col*4)+row/2])+adding >8:
+    if len(state.stekovi[(col*4)+row//2])+adding >8:
         return False
     return True
 
@@ -155,7 +155,7 @@ def HowMuchFromStack(stackInput:int,position:tuple):
     row = position[0] #broj
     col = position[1] #slovo
 
-    return len(state.stekovi[(col*4)+row/2])-stackInput
+    return len(state.stekovi[(col*4)+row//2])-stackInput
 
 
     
@@ -171,7 +171,16 @@ def playTurnWithInputs(state:GameState):
     
     #nova istanca stanja
     newState = GameState()
-    newState = copy.deepcopy(state)
+    newState.playerSign = state.playerSign
+    newState.cpuSign = state.cpuSign
+    newState.currentTurn = state.currentTurn
+    newState.dimension = state.dimension
+    newState.maxDimension = state.maxDimension
+    newState.playerScore = state.playerScore
+    newState.cpuScore = state.cpuScore
+    # Kopiranje stekova - moguće je napraviti kopiju stekova jedan po jedan ili prilagoditi njihovo kopiranje
+    newState.stekovi = [elem for elem in state.stekovi]
+
 
     if newState.currentTurn == "X":
         while(True):
@@ -179,13 +188,13 @@ def playTurnWithInputs(state:GameState):
             rowInput = getValidIntInput(0, newState.dimension, "row (1,2,3...)")
             colInput = getValidCharToIntInput(0, newState.dimension, "column (A,B,C...)")
 
-            if not isPositionValid(newState.dimension,(rowInput, colInput)):
+            if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
                 print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
             else:
                 break
             stackInput=getValidIntInput(-1,8,"stack")   #0 do 7
             
-            if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput)):
+            if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput),newState.stekovi):
                 print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
             else:
                 break
