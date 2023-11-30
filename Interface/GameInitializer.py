@@ -67,6 +67,7 @@ def intializeGame(maxDimension:int):
 
 def gameIsOver():
     state:GameState = GameState()
+    winner:string
     j:int
     j=len(state.stekovi)
     gameOver:bool=True
@@ -76,8 +77,14 @@ def gameIsOver():
     if((state.playerScore<=len(state.stekovi)/2) or (state.cpuScore<=len(state.stekovi)/2)):
         gameOver=False
     if(gameOver==True):
+        if(state.playerScore>state.cpuScore):
+            winner="PLAYER"
+        else :
+            winner="CPU"
         print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
         print(colored(" GAME IS OVER! ", 'red', attrs=['bold']))
+        print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
+        print(colored(f"{winner} IS A WINNER! ", 'red', attrs=['bold']))
         print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
 
     

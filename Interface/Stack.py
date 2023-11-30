@@ -38,3 +38,8 @@ class Stack:
         self.push(element)
 
 
+#duzina steka
+
+    def stackLen(self):
+        return len(self.array)
+        
