@@ -3,6 +3,7 @@ from Controllers.GameState import GameState
 from ImportedScripts.CMDTextColorizer.ColorizeText import colored
 from Interface.Stack import Stack
 from Interface.StatePrinter import printWholeTable
+from Interface.GameInitializer import gameIsOver
 
 state:GameState = GameState()
 
@@ -114,7 +115,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
             return False
         else:
             return True
-    elif moveInput=="GD":
+    elif moveInput=="DL":
         if not isPositionValid(rowDim,(row+1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GD
@@ -122,7 +123,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
             return False
         else:
             return True
-    elif moveInput=="DL":
+    elif moveInput=="GD":
         if not isPositionValid(rowDim,(row-1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u DL
@@ -155,20 +156,24 @@ def StackCapacity(adding:int,position:tuple, stekovi:list):
 def HowMuchFromStack(stackInput:int,position:tuple, stekovi:list):
     row = position[0] #slovo
     col = position[1] #broj
-
-    return stekovi[(row*4)+col//2].stackLen()-stackInput
+    pom =stekovi[(row*4)+col//2].stackLen()
+    return pom-stackInput
 
 def transferFromStack(position:tuple, stekovi:list, stackInput:int,moveInput):
      row = position[0] #slovo
      col = position[1] #broj
      positionNew=newPostionCalc(position, moveInput)
-     rowNew=position[0]
-     colNew=position[1]
+     rowNew=positionNew[0]
+     colNew=positionNew[1]
      transfer=[]
      for i in range (HowMuchFromStack(stackInput, position, stekovi)):
            transfer.append(stekovi[(row*4)+col//2].pop())
-     for i in range (1, HowMuchFromStack(stackInput, position, stekovi)+1):
-         stekovi[(rowNew*4)+colNew//2].push(transfer[-i])
+     for i in range (1, len(transfer)+1):
+         if(stekovi[(rowNew*4)+colNew//2].is_empty()):
+             stekovi[(rowNew*4)+colNew//2].makeBegginingStack(transfer[-i])
+         else:
+             stekovi[(rowNew*4)+colNew//2].push(transfer[-i])
+    
     
     
     
@@ -180,10 +185,10 @@ def newPostionCalc( position:tuple,moveInput):
     if moveInput=="GL":
         return (row-1,col-1)
         
-    elif moveInput=="GD":
+    elif moveInput=="DL":
        return(row+1,col-1)
        
-    elif moveInput=="DL":
+    elif moveInput=="GD":
         return(row-1,col+1)
      
     elif moveInput=="DD":
@@ -202,7 +207,7 @@ def playTurnWithInputs(state:GameState):
     stackInput=-1
     moveInput= chr(0)
 
-    print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
+    
     
     #nova istanca stanja
     newState = GameState()
@@ -216,75 +221,75 @@ def playTurnWithInputs(state:GameState):
     # Kopiranje stekova - moguće je napraviti kopiju stekova jedan po jedan ili prilagoditi njihovo kopiranje
     newState.stekovi = [elem for elem in state.stekovi]
 
-
-    if newState.currentTurn == "X":
-        while(True):
-
-            # Send rowDim instead of rowDim-1 because row at the table that user sees starts from 1
-            rowInput = getValidCharToIntInput(0, newState.dimension, "row (A,B,C...)")
-            colInput = getValidIntInput(0, newState.dimension, "column (1,2,3...)")
-
-            if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
-                print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
-                continue
-           
-            stackInput=getValidIntInput(-1,8,"stack")   #0 do 7
+    while(gameIsOver()==False):
+        if state.currentTurn == "X":
+            print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
+            while(True):
             
-            if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput),newState.stekovi):
-                print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
-                continue
+                # Send rowDim instead of rowDim-1 because row at the table that user sees starts from 1
+                rowInput = getValidCharToIntInput(0, newState.dimension, "row (A,B,C...)")
+                colInput = getValidIntInput(0, newState.dimension, "column (1,2,3...)")
 
-            moveInput=getValidMoveInput()
+                if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
+                    print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
+                    continue
+                
+                stackInput=getValidIntInput(0,8,"stack (1,2,3..)")   #0 do 7
 
-            if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput):
-                print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
-                continue
+                if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput),newState.stekovi):
+                    print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
+                    continue
+                
+                moveInput=getValidMoveInput()
 
-            else: break
+                if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput):
+                    print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
+                    continue
+                
+                else: break
 
-        #push i pop 
-        transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput)
-        printWholeTable(newState)
-
-
-    elif state.currentTurn == "O":
-        while(True):
-            # Send rowDim instead of rowDim-1 because row at the table that user sees starts from 1
-            rowInput = getValidIntInput(0, newState.dimension, "ROW (1,2,3)")
-            colInput = getValidCharToIntInput(0, newState.dimension, "COLUMN (A,B,C)")
-
-           # if not isHorizontalMoveValid(newState.stateMatrix, newState.colDim, (rowInput, colInput)):
-           #     print(colored("You can't place a domino here, try again!", 'red', attrs=['bold']))
-           # else:
-           #     break
-
-        newState.stateMatrix[rowInput][colInput] = "O"
-        newState.stateMatrix[rowInput][colInput+1] = "O"
-        newState.lastPlayedO = [rowInput, colInput]
-
-    newState.currentTurn = "O" if newState.currentTurn == "X" else "X"
-    newState.lastPlayedMove = [rowInput, colInput]
-
-    return newState
+            #push i pop 
+            transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput)
+            state.stekovi=newState.stekovi
+            state.currentTurn = "O"
+            gameIsOver()
+            printWholeTable(state)
 
 
+        elif state.currentTurn == "O":
+            print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
+            while(True):
+            
+                # Send rowDim instead of rowDim-1 because row at the table that user sees starts from 1
+                rowInput = getValidCharToIntInput(0, newState.dimension, "row (A,B,C...)")
+                colInput = getValidIntInput(0, newState.dimension, "column (1,2,3...)")
 
-# Only valid turns are passed as row and col arguments
-def playValidTurnInstantly(state:GameState, row, col):
-    newState = GameState()
-    newState = copy.deepcopy(state)
+                if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
+                    print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
+                    continue
+                
+                stackInput=getValidIntInput(0,8,"stack (1,2,3..)")   #0 do 7
+                
+                if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput),newState.stekovi):
+                    print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
+                    continue
+                
+                moveInput=getValidMoveInput()
 
- #   if newState.currentTurn == "X":
- #       newState.stateMatrix[row][col] = "X"
- #       newState.stateMatrix[row + 1][col] = "X"
- #       newState.lastPlayedX = [row, col]
-#
- #   elif state.currentTurn == "O":
- #       newState.stateMatrix[row][col] = "O"
- #       newState.stateMatrix[row][col + 1] = "O"
- #       newState.lastPlayedO = [row, col]
-#
- #   newState.currentTurn = "O" if newState.currentTurn == "X" else "X"
- #   newState.lastPlayedMove = [row, col]
-#
- #   return newState
+                if not isMoveValid(newState.stekovi, newState.dimension, (rowInput, colInput),moveInput,stackInput):
+                    print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
+                    continue
+                
+                else: break
+
+            #push i pop 
+            transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput)
+            state.stekovi=newState.stekovi
+            state.currentTurn = "X"
+            gameIsOver()
+            printWholeTable(state)
+
+   
+
+
+

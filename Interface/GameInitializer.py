@@ -86,7 +86,9 @@ def gameIsOver():
         print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
         print(colored(f"{winner} IS A WINNER! ", 'red', attrs=['bold']))
         print(colored("\n-----------------------------------\n", 'red', attrs=['bold']))
-
+        return True
+    else:
+        return False
     
 
 
