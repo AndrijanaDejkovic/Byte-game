@@ -77,34 +77,34 @@ def getValidPosition(col:int, row:int):
 
 #da li ima stacka na tom polju
 def isPositionValid(dim:int,position:tuple,stekovi:list):
-    row = position[0] #broj
-    col = position[1] #slovo
+    row = position[0] #slovo
+    col = position[1] #broj
 
     if row < 0 or row >= dim - 1:
         return False
     elif(row+col)%2!=0:    #ako nema stackova na tom polju
         return False
-    elif stekovi[(col*4)+row//2].is_empty(): #ako nema sta da se skine sa stacka
+    elif stekovi[(row*4)+col//2].is_empty(): #ako nema sta da se skine sa stacka
         return False
     return True
 
 #da li ima figurice na zadatom mestu u stacku
 def isStackPosValid(stackInput:int,dim:int,position:tuple,stekovi:list):
-    row = position[0] #broj
-    col = position[1] #slovo
+    row = position[0] #slovo
+    col = position[1] #broj
 
     if row < 0 or row >= dim - 1:
         return False
-    elif stekovi[(col*4)+row//2].stackLen()==0: #ako nema sta da se skine sa stacka
+    elif stekovi[(row*4)+col//2].stackLen()==0: #ako nema sta da se skine sa stacka
         return False
-    elif stekovi[(col*4)+row//2].stackLen()<=stackInput:
+    elif stekovi[(row*4)+col//2].stackLen()<=stackInput:
         return False
     return True
 
 #da li moze da se izvrsi pokret
 def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
-    row = position[0] #broj
-    col = position[1] #slovo
+    row = position[0] #slovo
+    col = position[1] #broj
 
     if moveInput=="GL":
         if not isPositionValid(rowDim,(row-1,col-1), stekovi):
@@ -142,10 +142,10 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput):
 
 #da li stack moze da primi n broj figura
 def StackCapacity(adding:int,position:tuple, stekovi:list):
-    row = position[0] #broj
-    col = position[1] #slovo
+    row = position[0] #slovo
+    col = position[1] #broj
 
-    if stekovi[(col*4)+row//2].stackLen()+adding >8:
+    if stekovi[(row*4)+col//2].stackLen()+adding >8:
         return False
     return True
 
@@ -153,29 +153,29 @@ def StackCapacity(adding:int,position:tuple, stekovi:list):
 
 #kolko figura se prenosi
 def HowMuchFromStack(stackInput:int,position:tuple, stekovi:list):
-    row = position[0] #broj
-    col = position[1] #slovo
+    row = position[0] #slovo
+    col = position[1] #broj
 
-    return stekovi[(col*4)+row//2].stackLen()-stackInput
+    return stekovi[(row*4)+col//2].stackLen()-stackInput
 
 def transferFromStack(position:tuple, stekovi:list, stackInput:int,moveInput):
-     row = position[0] #broj
-     col = position[1] #slovo
+     row = position[0] #slovo
+     col = position[1] #broj
      positionNew=newPostionCalc(position, moveInput)
      rowNew=position[0]
      colNew=position[1]
      transfer=[]
      for i in range (HowMuchFromStack(stackInput, position, stekovi)):
-           transfer.append(stekovi[(col*4)+row//2].pop())
+           transfer.append(stekovi[(row*4)+col//2].pop())
      for i in range (1, HowMuchFromStack(stackInput, position, stekovi)+1):
-         stekovi[(colNew*4)+rowNew//2].push(transfer[-i])
+         stekovi[(rowNew*4)+colNew//2].push(transfer[-i])
     
     
     
 
 def newPostionCalc( position:tuple,moveInput):
-    row = position[0] #broj
-    col = position[1] #slovo
+    row = position[0] #slovo
+    col = position[1] #broj
 
     if moveInput=="GL":
         return (row-1,col-1)
@@ -221,8 +221,8 @@ def playTurnWithInputs(state:GameState):
         while(True):
 
             # Send rowDim instead of rowDim-1 because row at the table that user sees starts from 1
-            rowInput = getValidIntInput(0, newState.dimension, "row (1,2,3...)")
-            colInput = getValidCharToIntInput(0, newState.dimension, "column (A,B,C...)")
+            rowInput = getValidCharToIntInput(0, newState.dimension, "row (A,B,C...)")
+            colInput = getValidIntInput(0, newState.dimension, "column (1,2,3...)")
 
             if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
                 print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
