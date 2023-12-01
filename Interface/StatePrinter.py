@@ -4,8 +4,8 @@ from ImportedScripts.TextColorizer.ColorizeText import colored
 def printNumbers(n):
     for i in range (1, n+1):
         if (i == 1):
-            print("     ", end="")
-        print(f"{i}      ", end="")
+            print("", end="")
+        print(f"{i:7}", end="")
 
 # Ovo je zamisljeno da bude ceo red tipa . . . (razmak) . . . (razmak) X . . (razmak) . . . (razmak) . . . (razmak)
 # Hardkodirano je da na neparno i stampa stek a na parno prazan red
@@ -47,7 +47,7 @@ def printStackRow(stek, row):
     if len(stek.array) > (row * 3):
         c = stek.array[row * 3]
 
-    return f"{c} {b} {a}"
+    return f"{c} {b} {a} "
     #stampa se drugim redosledom, znaci elementi od 1-9. pozicije idu ovako
     #987
     #654

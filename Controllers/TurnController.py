@@ -13,12 +13,21 @@ def getNumberFromASCII(asciiChar):
 
 def getValidIntInput(min:int, max:int, inputContext:str):
     inp = -1
-    while(inp <= min or inp > max):   #da li je od 0 do dimenzije table
+    while(inp < min or inp > max):   #da li je od 0 do dimenzije table
         try:
             inp = int(input(colored(f"Enter {inputContext} position: ", 'yellow')))
         except:
             print(colored("Invalid input", 'red', attrs=['bold']))
     return inp - 1
+
+def getValidStackInput(min:int, max:int, inputContext:str):
+    inp = -1
+    while(inp < min or inp > max):   #da li je od 0 do dimenzije table
+        try:
+            inp = int(input(colored(f"Enter {inputContext} position: ", 'yellow')))
+        except:
+            print(colored("Invalid input", 'red', attrs=['bold']))
+    return inp
 
 
 def getValidCharToIntInput(min:int, max:int, inputContext:str):  
@@ -77,7 +86,7 @@ def getValidPosition(col:int, row:int):
 #proverava da li postoji nesto na zadatom indeksu u zadatom steku
 
 #da li ima stacka na tom polju
-def isPositionValid(dim:int,position:tuple,stekovi:list):
+def isPositionValidSrc(dim:int,position:tuple,stekovi:list):
     row = position[0] #slovo
     col = position[1] #broj
 
@@ -95,6 +104,26 @@ def isPositionValid(dim:int,position:tuple,stekovi:list):
     elif stekovi[((row)*x)+y//2 - 1].is_empty(): #ako nema sta da se skine sa stacka
         print(f"NASTANAK3 {((row)*x)+y//2 - 1}")
         return False
+    return True
+
+def isPositionValidDst(dim:int,position:tuple,stekovi:list):
+    row = position[0] #slovo
+    col = position[1] #broj
+
+    x = int(dim/2)
+    y = col + 2
+    
+    print(f"OVO JE Y{y} a stek je : {((row)*x)+y//2 - 1}")
+
+    if row < 0 or row > dim - 1:
+        print("NASTANAK1")
+        return False
+    elif(row+col)%2!=0:    #ako nema stackova na tom polju
+        print("NASTANAK2")
+        return False
+    #elif stekovi[((row)*x)+y//2 - 1].is_empty(): #ako nema sta da se skine sa stacka
+    #    print(f"NASTANAK3 {((row)*x)+y//2 - 1}")
+    #    return False
     return True
 
 #da li ima figurice na zadatom mestu u stacku
@@ -125,7 +154,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
     col = position[1] #broj
 
     if moveInput=="GL":
-        if not isPositionValid(rowDim,(row-1,col-1), stekovi):
+        if not isPositionValidDst(rowDim,(row-1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GL
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row-1,col-1), stekovi, rowDim):
@@ -133,7 +162,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         else:
             return True
     elif moveInput=="DL":
-        if not isPositionValid(rowDim,(row+1,col-1), stekovi):
+        if not isPositionValidDst(rowDim,(row+1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GD
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row+1,col-1), stekovi, rowDim):
@@ -141,7 +170,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         else:
             return True
     elif moveInput=="GD":
-        if not isPositionValid(rowDim,(row-1,col+1), stekovi):
+        if not isPositionValidDst(rowDim,(row-1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u DL
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row-1,col+1), stekovi, rowDim):
@@ -149,7 +178,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         else:
             return True
     elif moveInput=="DD":
-        if not isPositionValid(rowDim,(row+1,col+1), stekovi):
+        if not isPositionValidDst(rowDim,(row+1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u GD
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row+1,col+1), stekovi, rowDim):
@@ -192,17 +221,17 @@ def transferFromStack(position:tuple, stekovi:list, stackInput:int,moveInput, di
      transfer=[]
      x = int(dim/2)
      y = col + 2
+     yNew=colNew+2
      print(f"u transferu pozicija : {((rowNew)*x)+y//2 - 1}")
 
 
      for i in range (HowMuchFromStack(stackInput, position, stekovi, dim)):
            transfer.append(stekovi[((row)*x)+y//2 - 1].pop())
      for i in range (1, len(transfer)+1):
-         if(stekovi[((rowNew)*x)+y//2 - 1].is_empty()):
-             stekovi[((rowNew)*x)+y//2 - 1].push(transfer[-i])
-         else:
-             stekovi[((rowNew)*x)+y//2 - 1].push(transfer[-i])
-    
+
+        stekovi[((rowNew)*x)+yNew//2 - 1].push(transfer[-i])
+     
+         
     
     
     
@@ -224,7 +253,16 @@ def newPostionCalc( position:tuple,moveInput):
        return(row+1,col+1)
       
 
-
+def pointsUpdate(state):
+    for stek in state.stekovi:
+        if len(stek.array)==8:
+            if stek.array[7]==state.playerSign:
+               state.playerScore+=1
+            else:
+               state.cpuScore+=1
+            stek.emptyFullStack()
+           
+               
      
 
     
@@ -259,11 +297,11 @@ def playTurnWithInputs(state:GameState):
                 rowInput = getValidCharToIntInput(0, newState.dimension, "row (A,B,C...)")
                 colInput = getValidIntInput(0, newState.dimension, "column (1,2,3...)")
 
-                if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
+                if not isPositionValidSrc(newState.dimension,(rowInput, colInput),newState.stekovi):
                     print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
                     continue
                 
-                stackInput=getValidIntInput(0,8,"stack (1,2,3..)")   #0 do 7
+                stackInput=getValidStackInput(0,8,"stack (0,1,2..)")   #0 do 7
 
                 if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput),newState.stekovi):
                     print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
@@ -279,7 +317,10 @@ def playTurnWithInputs(state:GameState):
 
             #push i pop 
             transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput, newState.dimension)
+            pointsUpdate(newState)
             state.stekovi=newState.stekovi
+            state.playerScore=newState.playerScore
+            state.cpuScore=newState.cpuScore
             state.currentTurn = "O"
             gameIsOver()
             printWholeTable(newState)
@@ -293,11 +334,11 @@ def playTurnWithInputs(state:GameState):
                 rowInput = getValidCharToIntInput(0, newState.dimension, "row (A,B,C...)")
                 colInput = getValidIntInput(0, newState.dimension, "column (1,2,3...)")
 
-                if not isPositionValid(newState.dimension,(rowInput, colInput),newState.stekovi):
+                if not isPositionValidSrc(newState.dimension,(rowInput, colInput),newState.stekovi):
                     print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
                     continue
                 
-                stackInput=getValidIntInput(0,8,"stack (1,2,3..)")   #0 do 7
+                stackInput=getValidStackInput(0,8,"stack (0,1,2..)")   #0 do 7
                 
                 if not isStackPosValid(stackInput, newState.dimension,(rowInput, colInput),newState.stekovi):
                     print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
@@ -313,7 +354,10 @@ def playTurnWithInputs(state:GameState):
 
             #push i pop 
             transferFromStack((rowInput, colInput), newState.stekovi, stackInput,moveInput, newState.dimension)
+            pointsUpdate(newState)
             state.stekovi=newState.stekovi
+            state.playerScore=newState.playerScore
+            state.cpuScore=newState.cpuScore
             state.currentTurn = "X"
             gameIsOver()
             printWholeTable(state)

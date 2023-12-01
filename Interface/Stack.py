@@ -43,3 +43,9 @@ class Stack:
     def stackLen(self):
         return len(self.array)
         
+#brise kad je pun stek stek.len==8
+    def emptyFullStack(self):
+        if(len(self.array)==8):
+            for i in range (8):
+                self.array.pop()
+    

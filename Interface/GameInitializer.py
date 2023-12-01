@@ -67,14 +67,14 @@ def intializeGame(maxDimension:int):
 
 def gameIsOver():
     state:GameState = GameState()
-    winner:string
+    winner:str
     j:int
     j=len(state.stekovi)
     gameOver:bool=True
     for stek in state.stekovi:
-        if len(stek.array)==0:
+        if len(stek.array)!=0:
            gameOver=False
-    if((state.playerScore<=len(state.stekovi)/2) or (state.cpuScore<=len(state.stekovi)/2)):
+    if((state.playerScore*8<=len(state.stekovi)/2) or (state.cpuScore<=len(state.stekovi)/2)):
         gameOver=False
     if(gameOver==True):
         if(state.playerScore>state.cpuScore):
