@@ -74,7 +74,7 @@ def gameIsOver():
     for stek in state.stekovi:
         if len(stek.array)!=0:
            gameOver=False
-    if((state.playerScore*8<=len(state.stekovi)/2) or (state.cpuScore<=len(state.stekovi)/2)):
+    if((state.playerScore*8<=len(state.stekovi)/2) or (state.cpuScore*8<=len(state.stekovi)/2)):
         gameOver=False
     if(gameOver==True):
         if(state.playerScore>state.cpuScore):

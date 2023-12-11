@@ -62,16 +62,14 @@ def isPositionValidSrc(dim:int,position:tuple,stekovi:list):
     x = int(dim/2)
     y = col + 2
     
-    print(f"OVO JE Y{y} a stek je : {((row)*x)+y//2 - 1}")
 
     if row < 0 or row > dim - 1:
-        print("NASTANAK1")
+
         return False
     elif(row+col)%2!=0:    #ako nema stackova na tom polju
-        print("NASTANAK2")
+
         return False
     elif stekovi[((row)*x)+y//2 - 1].is_empty(): #ako nema sta da se skine sa stacka
-        print(f"NASTANAK3 {((row)*x)+y//2 - 1}")
         return False
     return True
 
@@ -82,13 +80,11 @@ def isPositionValidDst(dim:int,position:tuple,stekovi:list):
     x = int(dim/2)
     y = col + 2
     
-    print(f"OVO JE Y{y} a stek je : {((row)*x)+y//2 - 1}")
+
 
     if row < 0 or row > dim - 1:
-        print("NASTANAK1")
         return False
     elif(row+col)%2!=0:    #ako nema stackova na tom polju
-        print("NASTANAK2")
         return False
     #elif stekovi[((row)*x)+y//2 - 1].is_empty(): #ako nema sta da se skine sa stacka
     #    print(f"NASTANAK3 {((row)*x)+y//2 - 1}")
@@ -102,18 +98,15 @@ def isStackPosValid(stackInput:int,dim:int,position:tuple,stekovi:list):
     x = int(dim/2)
     y = col + 2
     
-    print(f"da li je dobra pozicija steka : {((row)*x)+y//2 - 1}")
-    print(f"a evo su dimenzije : x {row}, y : {col}")
-    print(f"stak input : {stackInput}, a duzina steka : {stekovi[((row)*x)+y//2 - 1].stackLen()}")
 
     if row < 0 or row > dim - 1:
-        print("Kaze da je van")
+
         return False
     elif stekovi[((row)*x)+y//2 - 1].stackLen()==0: #ako nema sta da se skine sa stacka
-        print("Kaze da je prazan")
+
         return False
     elif stekovi[((row)*x)+y//2 - 1].stackLen()<= stackInput:
-        print("Kaze da ima manje elemenata")
+
         return False
     return True
 
@@ -191,7 +184,7 @@ def transferFromStack(position:tuple, stekovi:list, stackInput:int,moveInput, di
      x = int(dim/2)
      y = col + 2
      yNew=colNew+2
-     print(f"u transferu pozicija : {((rowNew)*x)+y//2 - 1}")
+    
 
 
      for i in range (HowMuchFromStack(stackInput, position, stekovi, dim)):

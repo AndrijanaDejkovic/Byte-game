@@ -18,7 +18,7 @@ class Stack:
             return None
         else:
             popped_value = self.array.pop()
-            print(f"Popped {popped_value} from the stack")
+            
             return popped_value
 
     def is_empty(self):
