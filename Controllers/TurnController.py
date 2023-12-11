@@ -222,7 +222,15 @@ def pointsUpdate(state):
             stek.emptyFullStack()
            
                
-     
+
+#provera za potez  - player sign mora da se poklapa sa stekom koji treba da se poreri(da je X ako igra X)
+#provera za potez - da li postiji neprazno polje GD,  GL, DL,DD 
+#provera ako ne postoji neprazno polje - računa se najmanja udaljenost do nezauzetog polja(???) - onda su valjani potezi oni sa najmanjom udaljenoscu
+#proverava visine stekova hsrc<hdest
+#fja koja će da vrati sve valjane poteze za sve figurice 
+#ako ima valjani bar jedan - mora da odigra
+
+      
 
     
 
