@@ -52,38 +52,7 @@ def getValidMoveInput():
     return move
 #proverava da li je moguc pomeraj (ivica)
 
-#provera indeksa reda (slovo)
-def getValidFieldRow():
-   
-    move = input(colored(f"Enter the row index (1-{state.dimension}): ",'yellow')).upper()
 
-    while 1<move<state.dimension:
-        print(colored("Invalid index! Please enter a valid index.",'red'))
-        move = input(colored(f"Enter the index (1-{state.dimension}): ",'yellow')).upper()
-
-    return move
-
-#provera indeksa kolone (broj)
-def getValidFieldColumn():
-    start_char = ord('A')  # ASCII code for 'A'
-    possible_letters = [chr(start_char + i) for i in range(state.dimension)]
-    move = input(colored(f"Enter the column index ({possible_letters[0]}-{possible_letters[-1]}): ",'yellow')).upper()
-
-    while move not in possible_letters:
-        print(colored("Invalid index! Please enter a valid index.",'red'))
-        move = input(colored(f"Enter the index ({possible_letters[0]}-{possible_letters[-1]}): ",'yellow')).upper()
-
-    return move
-
-#provera da li je stek na tom polju prazan, ako jeste zahteva ponovno unošenje indeksa
-def getValidPosition(col:int, row:int):
-    
-    while is_empty(state.stekovi[row, col]):
-        print(colored("Invalid stack! Please enter a not-empty stack index.",'red'))
-        getValidFieldRow()
-        getValidFieldColumn()
-
-#proverava da li postoji nesto na zadatom indeksu u zadatom steku
 
 #da li ima stacka na tom polju
 def isPositionValidSrc(dim:int,position:tuple,stekovi:list):
@@ -230,10 +199,7 @@ def transferFromStack(position:tuple, stekovi:list, stackInput:int,moveInput, di
      for i in range (1, len(transfer)+1):
 
         stekovi[((rowNew)*x)+yNew//2 - 1].push(transfer[-i])
-     
-         
-    
-    
+   
     
 
 def newPostionCalc( position:tuple,moveInput):
