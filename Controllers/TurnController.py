@@ -52,6 +52,11 @@ def getValidMoveInput():
     return move
 #proverava da li je moguc pomeraj (ivica)
 
+def coorToStack(row, col):
+
+    x = int(state.dimension/2)
+    y = col + 2
+    return state.stekovi[((row)*x)+y//2 - 1]
 
 
 #da li ima stacka na tom polju
@@ -109,6 +114,20 @@ def isStackPosValid(stackInput:int,dim:int,position:tuple,stekovi:list):
 
         return False
     return True
+#za hsrc i hdst
+def isHeightValid(rowDest, colDest, moveInput):
+    if((moveInput +1)<(coorToStack(rowDest, colDest).stackLen)):
+        return True
+    else:
+        return False
+
+#za player sign i figurica da se poklope
+def isSignCorrect(row, col, moveInput):
+    if(coorToStack(row, col)[moveInput]==state.currentTurn):
+        return True
+    return False
+
+#za player sign i figurica da se poklope
 
 #da li moze da se izvrsi pokret
 def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, dim : int):
@@ -116,35 +135,61 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
     col = position[1] #broj
 
     if moveInput=="GL":
-        if not isPositionValidDst(rowDim,(row-1,col-1), stekovi):
+         #za player sign i figurica da se poklope
+        if not isSignCorrect(row, col, moveInput):
+            return False
+        elif not isPositionValidDst(rowDim,(row-1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GL
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row-1,col-1), stekovi, rowDim):
             return False
+        #za hsrc i hdst
+        elif not isHeightValid(row-1,col-1, moveInput):
+            return False    
+        #i ako je dest stack prazan pozovi fju isThisFieldInValidMoves(za row i col npr)
+        
         else:
             return True
     elif moveInput=="DL":
-        if not isPositionValidDst(rowDim,(row+1,col-1), stekovi):
+        #za player sign i figurica da se poklope
+        if not isSignCorrect(row, col, moveInput):
+            return False
+        elif not isPositionValidDst(rowDim,(row+1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GD
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row+1,col-1), stekovi, rowDim):
             return False
+        elif not isHeightValid(row+1,col-1, moveInput):
+            return False
+       
         else:
             return True
     elif moveInput=="GD":
-        if not isPositionValidDst(rowDim,(row-1,col+1), stekovi):
+        #za player sign i figurica da se poklope
+        if not isSignCorrect(row, col, moveInput):
+            return False
+        elif not isPositionValidDst(rowDim,(row-1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u DL
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row-1,col+1), stekovi, rowDim):
             return False
+        elif not isHeightValid(row-1,col+1, moveInput):
+            return False
+       
         else:
             return True
     elif moveInput=="DD":
-        if not isPositionValidDst(rowDim,(row+1,col+1), stekovi):
+         #za player sign i figurica da se poklope
+        if not isSignCorrect(row, col, moveInput):
+            return False
+        elif not isPositionValidDst(rowDim,(row+1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u GD
         elif not StackCapacity(HowMuchFromStack(stackInput,(row,col), stekovi, dim),(row+1,col+1), stekovi, rowDim):
             return False
+        elif not isHeightValid(row+1,col+1, moveInput):
+            return False
+       
         else:
             return True
 
@@ -230,9 +275,21 @@ def pointsUpdate(state):
 #fja koja će da vrati sve valjane poteze za sve figurice 
 #ako ima valjani bar jedan - mora da odigra
 
-      
+#OVO JE ZA SVE MOGUĆE VALJANE POTEZE     
+#for za sve figurice tog igrača i za svaki proveri gde može da se pomeri gg.. ovo proverava visine stekova hsrc<hdest i onda 
+    #ako su svi prazni ili neprazni ne ispunjavaju ove gore uslove gleda najmanje udaljenosti do nepraznog polja koja vode do najblizem nepraznom polju
+        #fja koja traži najblizi - promenjiva min i vraća niz indeksa koji imaju udaljenost jednaku min ({i,j},.. ) 
+        #pozivamo dfs za te indekse i vraća početne kordinate puta i svešta u niz valjanih puteva ali proverava da se već ne nalaze tu
+    #ako ima valjani bar jedan - mora da odigra
+        #ako nema printamo ne postoji valjani potez i igra drugi igrač
 
-    
+
+#ZA UNETE PARAMETRE VALJANI POTEZ
+#ako su svi prazni ili neprazni ne ispunjavaju ove gore uslove gleda najmanje udaljenosti do nepraznog polja koja vode do najblizem nepraznom polju
+        #fja koja traži najblizi - promenjiva min i vraća niz indeksa koji imaju udaljenost jednaku min ({i,j},.. ) 
+        #pozivamo dfs za te indekse i vraća početne kordinate puta i svešta u niz valjanih puteva ali proverava da se već ne nalaze tu
+        #provera za potez  - player sign mora da se poklapa sa stekom koji treba da se poreri(da je X ako igra X)
+        #proverava visine stekova hsrc<hdest
 
 
 def playTurnWithInputs(state:GameState):
