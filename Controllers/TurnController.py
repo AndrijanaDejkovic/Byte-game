@@ -58,6 +58,18 @@ def coorToStack(row, col):
     y = col + 2
     return state.stekovi[((row)*x)+y//2 - 1]
 
+def stackToCoor(stack):#nije provereno da l radi
+    row=state.stekovi.index(stack)//(state.dimension/2)
+    if(row%2==0):
+        col=((state.stekovi.index(stack))%(state.dimension/2) -1)*2
+    else:
+        col=((state.stekovi.index(stack))%(state.dimension/2))*2 -1
+    #x = int(state.dimension / 2)
+    #y = state.stekovi.index(stack) + 1
+    #row = (y - 1) // x
+    #col = ((y - 1) % x) * 2 - 2
+    return (row, col)
+
 
 #da li ima stacka na tom polju
 def isPositionValidSrc(dim:int,position:tuple,stekovi:list):
@@ -147,7 +159,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         elif not isHeightValid(row-1,col-1, moveInput):
             return False    
         #i ako je dest stack prazan pozovi fju isThisFieldInValidMoves(za row i col npr)
-        
+
         else:
             return True
     elif moveInput=="DL":
@@ -290,6 +302,24 @@ def pointsUpdate(state):
         #pozivamo dfs za te indekse i vraća početne kordinate puta i svešta u niz valjanih puteva ali proverava da se već ne nalaze tu
         #provera za potez  - player sign mora da se poklapa sa stekom koji treba da se poreri(da je X ako igra X)
         #proverava visine stekova hsrc<hdest
+
+def closestNonEmptyStack(row, col):
+    min=float('inf')
+    result=[]
+    for stek in state.stekovi:
+        rowDest=stackToCoor(stek)[0]
+        colDest=stackToCoor(stek)[1]
+        if(coorToStack(row, col)!=stek):
+            pom=max(abs(row-rowDest), abs(col-colDest))
+            if(pom<min):
+                min=pom
+                result=[]
+                result.append((rowDest,colDest))
+            elif(pom==min):
+                result.append((rowDest,colDest))
+    return result
+
+
 
 
 def playTurnWithInputs(state:GameState):
