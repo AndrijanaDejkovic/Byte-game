@@ -241,6 +241,10 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         #provera za potez  - player sign mora da se poklapa sa stekom koji treba da se poreri(da je X ako igra X)
         #proverava visine stekova hsrc<hdest
 
+
+#returnAllValidMoves --- dodace se fja koja ce da poz returnValidMovesForFigure u for petlji za svaku figuru 
+
+
 def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
     
     #za svako neprazno mod isMoveValid
