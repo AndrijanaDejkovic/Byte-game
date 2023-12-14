@@ -8,5 +8,5 @@ state:GameState = intializeGame(16)
 
 gameIsOver()
 printWholeTable(state)
-playTurnWithInputs(state)
-#print(closestNonEmptyStack(1,1,state.dimension, state.stekovi, state))
+#playTurnWithInputs(state)
+print(closestNonEmptyStack(2,2,state.dimension, state.stekovi, state, 1,1 ))
