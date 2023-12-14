@@ -73,7 +73,7 @@ def initializeGameState(dim:int, whoPlaysFirst:str):
     state.currentTurn = "X"
     state.dimension = dim
     state.stekovi = makeBegginingStacks(dim)
-    state.matrix = makeBegginingMatrix(dim, state.stekovi)
+    state.matrix = makeBeginningMatrix(dim, state.stekovi)
     
     return state
 
