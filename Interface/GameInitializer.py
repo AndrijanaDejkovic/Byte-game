@@ -48,6 +48,24 @@ def makeBegginingStacks(n):
     
     return stekovi
 
+def makeBeginningMatrix(n, stacks):
+    matrix = [[None] * n for _ in range(n)]
+
+    stack_counter = 0
+    for i in range(n):
+        if i == 0 or i == n - 1:
+            continue  # Skip first and last row
+        elif i % 2 == 0:
+            for j in range(0, n, 2):
+                matrix[i][j] = stacks[stack_counter] if stack_counter < len(stacks) else None
+                stack_counter += 1
+        else:
+            for j in range(1, n, 2):
+                matrix[i][j] = stacks[stack_counter] if stack_counter < len(stacks) else None
+                stack_counter += 1
+
+    return matrix
+
 def initializeGameState(dim:int, whoPlaysFirst:str):
     state:GameState = GameState()
     state.playerSign = "X" if whoPlaysFirst == "me" else "O"
@@ -55,6 +73,7 @@ def initializeGameState(dim:int, whoPlaysFirst:str):
     state.currentTurn = "X"
     state.dimension = dim
     state.stekovi = makeBegginingStacks(dim)
+    state.matrix = makeBegginingMatrix(dim, state.stekovi)
     
     return state
 

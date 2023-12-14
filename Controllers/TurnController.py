@@ -267,9 +267,10 @@ def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
     if not validMovesArray:#bez not ako je prazno vraca false -- sa not true ako je prazno
         for move in moveEmptyIndexes:
             arrayOfClosestNonEmptyIndexes=closestNonEmptyStack(move[0], move[1], rowDim, stekovi, state)
+            validMovesArray = validMovesToNonEmtyStack(arrayOfClosestNonEmptyIndexes, row, col)
             #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
-           
+        
 
 def closestNonEmptyStack(row, col, dim, stekovi, state):#nije proradilo jos veceras ce 
     min=float('inf')

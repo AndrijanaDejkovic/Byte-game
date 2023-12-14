@@ -8,4 +8,5 @@ class GameState:
                 self.maxDimension = 16
                 self.playerScore = 0
                 self.cpuScore = 0
+                self.matrix = [[]]
                 #sign score dim turn
