@@ -358,48 +358,6 @@ def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
     return validMovesArray
 
 
-def validMovesToNonEmtyStack(arrayOfClosestNonEmptyIndexes, startRow, startCol, state : GameState) :
-    def is_valid(x, y, rows, cols):
-        return 0 <= x < rows and 0 <= y < cols
-
-    def dfs(matrix, current, end, path, shortest_path):
-        x, y = current
-
-        if current == end:
-            if not shortest_path or len(path) < len(shortest_path[0]):
-                shortest_path[:] = [path]
-            elif len(path) == len(shortest_path[0]):
-                shortest_path.append(path)
-            return
-
-        for dx, dy in [(-1, 1), (1, 1), (1, -1), (-1, -1)]:
-            nx, ny = x + dx, y + dy
-            moveEmptyIndexes=[]
-            if coorToStack(nx, ny, state.dimension, state.stekovi).is_empty():
-                moveEmptyIndexes.append((nx, ny))
-                continue 
-            elif not isPositionValidDst(state.dimension,(nx, ny), state.stekovi):
-                continue
-            #kolko se prenosi iz stacka(row,col) na stack u DL
-            elif not StackCapacity(HowMuchFromStack(stackInput,(nx, ny), state.stekovi, state.dimension),(nx, ny), state.stekovi, state.dimension):
-                continue
-            elif not isHeightValid(nx, ny, stackInput, state.dimension, state.dimension):
-                continue
-            if (nx, ny) not in path : 
-                dfs(matrix, (nx, ny), end, path + [(nx, ny)], shortest_path)
-
-    def find_shortest_path(matrix, start, end):
-        shortest_path = []
-        dfs(matrix, start, end, [], shortest_path)
-        return shortest_path[0] if shortest_path else []
-    
-    start_position = (startRow, startCol)
-    end_position = (arrayOfClosestNonEmptyIndexes[0])
-
-    result = find_shortest_path(state.matrix, start_position, end_position)
-    print("Shortest Path:", result)
-        
-
 def closestNonEmptyStack(rowSrc, colSrc, dim, stekovi, state, row, col):#nije proradilo jos veceras ce 
     min=float('inf')
     result=[]
