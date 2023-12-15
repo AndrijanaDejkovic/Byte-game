@@ -4,8 +4,94 @@ from ImportedScripts.CMDTextColorizer.ColorizeText import colored
 from Interface.Stack import Stack
 from Interface.StatePrinter import printWholeTable
 from Interface.GameInitializer import gameIsOver
+from collections import deque
+
 
 state:GameState = GameState()
+
+# ===== REKURZIJA - KONCEPT ======= 
+# u ovom slucaju, deosteka nek bude samo brojka kolko figurice(zetona) prenosimo
+# 
+def rekurzija(trenutnoPoljeMatrice:list, deosteka:int, putanja:list, duzinaPuta = 0):
+    # Ispitati da li je polje u matrici - tj ako nije u matrici, nevalidno je
+        # if uMatrici(trenutnoPoljeMatrice) == false: return [None, None, None]
+    # Ispitati da li je trenutno polje stek ili je prazno
+        # if prazno(trenutnoPoljeMatrice) == false:
+            #if mozemoDaStavimoDeoSteka(deosteka, stekNaTrenutnomPoljuMatrice) == true: ---> NALAZIMO SE NA NEKOM STEKU, I MOZEMO DA STAVIMO TOLKO FIGURICA KOLKO PRENOSIMO
+                #return [trenutnoPoljeMatrice, putanja[prvoNarednoPolje], duzinaPuta] ---- ubaciti i duzinu puta u kalkulaciju
+            #else:
+                #return [None, None, None] -> dosli smo do polja koje je stek, ALI taj stek je recimo skoro pun i ne mozemo da stavimo "deosteka", izlazimo iz ove putanje jer ne mozemo dalje
+        # else:
+            #duzinaPuta++;
+            #putanja.append(trenutnoPoljeMatrice) --- ovo nece bas da radi najbolje, ako npr dodjemo na jedno prazno polje, a sledece polje nam ne daje validan potez, samo razmisliti kako se dodaju i/ili uklanjaju stvari iz putanje, da bi radilo dobro
+            
+    # Svejedno je kojim smerom, ali probamo prvo GORE LEVO
+    #rekurzija([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]-1], 3, putanja.append([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]-1]))
+    # DOLE LEVO 
+    #rekurzija([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]-1], 3, putanja.append([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]-1]))
+    # GORE DESNO
+    #rekurzija([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]+1], 3, putanja.append([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]+1]))
+    # DOLE DESNO
+    #rekurzija([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]+1], 3, putanja.append([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]+1]))
+
+    return [None, None, None]
+
+#mozemoDaStavimoDeoSteka(deosteka, stekNaTrenutnomPoljuMatrice):
+    #return deosteka + stekNaTrenutnomPoljuMatrice <= 8
+def isPositionInMatrix(position :(int,int), dimension : int) :
+    return position[0] >=0 and position[0] < dimension and position[1] >=0 and position[1] < dimension
+
+def shortestPathBetweenPositions(state : GameState, startPosition : (int, int), endPosition : (int, int)) :
+    rows, cols = state.dimension
+    visited = [[False] * cols for _ in range(rows)]
+    moves = [(-1, 1), (1, 1), (1, -1), (1, 1)]
+    queue = deque([(startPosition[0], startPosition[1], 0)])
+
+    while queue:
+        current_x, current_y, distance = queue.popleft()
+
+        # Check if we reached the destination
+        if (current_x, current_y) == endPosition:
+            return distance
+
+        # Mark the current position as visited
+        visited[current_x][current_y] = True
+
+        # Explore possible moves
+        for move_x, move_y in moves:
+            new_x, new_y = current_x + move_x, current_y + move_y
+            #print(current_x, current_y, distance)
+            # Check if the new position is valid
+            if isPositionInMatrix(new_x, new_y) and (state.matrix[new_x][new_y] == None or (isinstance(state.matrix[new_x][new_y], Stack) and (new_x, new_y) == endPosition)) :
+                queue.append((new_x, new_y, distance + 1))
+
+    # If no path is found
+    return -1
+
+def validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes : list, startPosition : (int, int), state : GameState) :
+    minumumDistancePositions = [(startPosition, -1)]
+    distances = []
+    for currentStackIndex in arrayOfClosestNonEmptyIndexes :
+        relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+
+        for dx, dy in relative_positions:
+            new_position = (startPosition[0] + dx, startPosition[1] + dy)
+
+            if isPositionInMatrix(new_position):
+                distance = 1 + shortestPathBetweenPositions(state, new_position, currentStackIndex)
+                distances.append((new_position, distance))
+
+        sortedDistances = sorted(distances, key=lambda x: x[1])
+        if sortedDistances[0][1] < minumumDistancePositions[0][1]:
+            minumumDistancePositions.clear()
+            for e in sortedDistances :
+                if (e[1] == sortedDistances[0][1]) :
+                    minumumDistancePositions.append(e)
+
+    return [item[0] for item in minumumDistancePositions]
+
+
+
 
 def getNumberFromASCII(asciiChar):
     num = ord(asciiChar) - 65
@@ -270,6 +356,48 @@ def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
             #validMovesArray = validMovesToNonEmtyStack(arrayOfClosestNonEmptyIndexes, row, col)
             #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
+
+
+def validMovesToNonEmtyStack(arrayOfClosestNonEmptyIndexes, startRow, startCol, state : GameState) :
+    def is_valid(x, y, rows, cols):
+        return 0 <= x < rows and 0 <= y < cols
+
+    def dfs(matrix, current, end, path, shortest_path):
+        x, y = current
+
+        if current == end:
+            if not shortest_path or len(path) < len(shortest_path[0]):
+                shortest_path[:] = [path]
+            elif len(path) == len(shortest_path[0]):
+                shortest_path.append(path)
+            return
+
+        for dx, dy in [(-1, 1), (1, 1), (1, -1), (-1, -1)]:
+            nx, ny = x + dx, y + dy
+            moveEmptyIndexes=[]
+            if coorToStack(nx, ny, state.dimension, state.stekovi).is_empty():
+                moveEmptyIndexes.append((nx, ny))
+                continue 
+            elif not isPositionValidDst(state.dimension,(nx, ny), state.stekovi):
+                continue
+            #kolko se prenosi iz stacka(row,col) na stack u DL
+            elif not StackCapacity(HowMuchFromStack(stackInput,(nx, ny), state.stekovi, state.dimension),(nx, ny), state.stekovi, state.dimension):
+                continue
+            elif not isHeightValid(nx, ny, stackInput, state.dimension, state.dimension):
+                continue
+            if (nx, ny) not in path : 
+                dfs(matrix, (nx, ny), end, path + [(nx, ny)], shortest_path)
+
+    def find_shortest_path(matrix, start, end):
+        shortest_path = []
+        dfs(matrix, start, end, [], shortest_path)
+        return shortest_path[0] if shortest_path else []
+    
+    start_position = (startRow, startCol)
+    end_position = (arrayOfClosestNonEmptyIndexes[0])
+
+    result = find_shortest_path(state.matrix, start_position, end_position)
+    print("Shortest Path:", result)
         
 
 def closestNonEmptyStack(rowSrc, colSrc, dim, stekovi, state, row, col):#nije proradilo jos veceras ce 

@@ -1,7 +1,7 @@
 class Stack:
     def __init__(self):
         self.array = []
-        self.dimension = 9
+        self.dimension = 8
 
 #dodavanje na stek
     def push(self, value):
@@ -18,7 +18,6 @@ class Stack:
             return None
         else:
             popped_value = self.array.pop()
-            
             return popped_value
 
     def is_empty(self):
