@@ -23,7 +23,8 @@ def rekurzija(trenutnoPoljeMatrice:list, deosteka:int, putanja:list, duzinaPuta 
                 #return [None, None, None] -> dosli smo do polja koje je stek, ALI taj stek je recimo skoro pun i ne mozemo da stavimo "deosteka", izlazimo iz ove putanje jer ne mozemo dalje
         # else:
             #duzinaPuta++;
-            #putanja.append(trenutnoPoljeMatrice) --- ovo nece bas da radi najbolje, ako npr dodjemo na jedno prazno polje, a sledece polje nam ne daje validan potez, samo razmisliti kako se dodaju i/ili uklanjaju stvari iz putanje, da bi radilo dobro
+            #putanja.append(trenutnoPoljeMatrice) --- ovo nece bas da radi najbolje, ako npr dodjemo na jedno prazno polje, a sledece polje nam ne daje validan potez,
+            #samo razmisliti kako se dodaju i/ili uklanjaju stvari iz putanje, da bi radilo dobro
             
     # Svejedno je kojim smerom, ali probamo prvo GORE LEVO
     #rekurzija([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]-1], 3, putanja.append([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]-1]))
@@ -46,7 +47,7 @@ def shortestPathBetweenPositions(state : GameState, startPosition : (int, int), 
     visited = [[False] * cols for _ in range(rows)]
     moves = [(-1, 1), (1, 1), (1, -1), (1, 1)]
     queue = deque([(startPosition[0], startPosition[1], 0)])
-
+    print("bfs")
     while queue:
         current_x, current_y, distance = queue.popleft()
 
@@ -62,7 +63,7 @@ def shortestPathBetweenPositions(state : GameState, startPosition : (int, int), 
             new_x, new_y = current_x + move_x, current_y + move_y
             #print(current_x, current_y, distance)
             # Check if the new position is valid
-            if isPositionInMatrix(new_x, new_y) and (state.matrix[new_x][new_y] == None or (isinstance(state.matrix[new_x][new_y], Stack) and (new_x, new_y) == endPosition)) :
+            if isPositionInMatrix((new_x, new_y), state.dimension) and (state.matrix[new_x][new_y] == None or (isinstance(state.matrix[new_x][new_y], Stack) and (new_x, new_y) == endPosition)) :
                 queue.append((new_x, new_y, distance + 1))
 
     # If no path is found
@@ -71,13 +72,14 @@ def shortestPathBetweenPositions(state : GameState, startPosition : (int, int), 
 def validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes : list, startPosition : (int, int), state : GameState) :
     minumumDistancePositions = [(startPosition, -1)]
     distances = []
+    print("ulazi u andrijanino")
     for currentStackIndex in arrayOfClosestNonEmptyIndexes :
         relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
         for dx, dy in relative_positions:
             new_position = (startPosition[0] + dx, startPosition[1] + dy)
 
-            if isPositionInMatrix(new_position):
+            if isPositionInMatrix(new_position, state.dimension):
                 distance = 1 + shortestPathBetweenPositions(state, new_position, currentStackIndex)
                 distances.append((new_position, distance))
 
@@ -141,8 +143,8 @@ def getValidMoveInput():
 def coorToStack(row, col, dim, stekovi):
 
     x = int(dim/2)
-    y = col + 2
-    return stekovi[((row)*x)+y//2 - 1]
+    y = int(col + 2)
+    return stekovi[(int)(((row)*x)+y//2 - 1)]
 
 def stackToCoor(stack, state):#nije provereno da l radi
     row=state.stekovi.index(stack)//(state.dimension/2)
@@ -239,9 +241,10 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         if not isSignCorrect(row, col, stackInput, dim, stekovi, newState):
             return False
         #i ako je dest stack prazan pozovi fju isThisFieldInValidMoves(za row i col npr)
-        #elif (coorToStack(row-1,col-1, dim, stekovi)).is_empty():
-        #    if (row-1, col-1) in returnValidMovesForFigure(row, col, dim, stekovi, newState):
-        #        return True
+        elif (coorToStack(row-1,col-1, dim, stekovi)).is_empty():
+            if (row-1, col-1) in returnValidMovesForFigure(row, col, dim, stekovi, stackInput, newState):
+                print("prazno polje je validno")
+                return True
         elif not isPositionValidDst(rowDim,(row-1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GL
@@ -258,6 +261,11 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, dim,stekovi, newState):
             return False
+        elif (coorToStack(row+1,col-1, dim, stekovi)).is_empty():
+            if (row+1, col-1) in returnValidMovesForFigure(row, col, dim, stekovi,stackInput, newState):
+                print("prazno polje je validno")
+                
+                return True
         elif not isPositionValidDst(rowDim,(row+1,col-1), stekovi):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GD
@@ -272,6 +280,11 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, dim,stekovi, newState):
             return False
+        elif (coorToStack(row-1,col+1, dim, stekovi)).is_empty():
+            if (row-1, col+1) in returnValidMovesForFigure(row, col, dim, stekovi, stackInput, newState):
+                print("prazno polje je validno")
+
+                return True
         elif not isPositionValidDst(rowDim,(row-1,col+1), stekovi):
             return False
     #kolko se prenosi iz stacka(row,col) na stack u DL
@@ -287,6 +300,11 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         if not isSignCorrect(row, col, stackInput, dim, stekovi, newState):
             print("sign not correct")
             return False
+        elif (coorToStack(row+1,col+1, dim, stekovi)).is_empty():
+            if (row-1, col-1) in returnValidMovesForFigure(row, col, dim, stekovi, stackInput, newState):
+                print("prazno polje je validno")
+
+                return True
         elif not isPositionValidDst(rowDim,(row+1,col+1), stekovi):
             print("position not correct")
             return False
@@ -328,8 +346,8 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         #proverava visine stekova hsrc<hdest
 
 
-#returnAllValidMoves --- dodace se fja koja ce da poz returnValidMovesForFigure u for petlji za svaku figuru 
-
+#returnAllValidMoves --- dodace se fja koja ce da poz returnValidMovesForFigure u for petlji za svaku figuru tog znaka!
+#predaja potez
 
 def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
     
@@ -350,34 +368,42 @@ def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
         elif not isHeightValid(move[0], move[1], stackInput, rowDim, stekovi):
             continue
         validMovesArray.append(move)
-    if not validMovesArray:#bez not ako je prazno vraca false -- sa not true ako je prazno
-        for move in moveEmptyIndexes:
-            arrayOfClosestNonEmptyIndexes=closestNonEmptyStack(move[0], move[1], rowDim, stekovi, state, row, col)
-            #validMovesArray = validMovesToNonEmtyStack(arrayOfClosestNonEmptyIndexes, row, col)
-            #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
+    if len(moveEmptyIndexes)==4:#ako su sva polja susedna prazna
+        print("sva su polja okolna prazna")
+        arrayOfClosestNonEmptyIndexes=allValidStacks(rowDim, state, row, col, stackInput)
+        validMovesArray = validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes, (row, col), state)
+        #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
 
 
-def closestNonEmptyStack(rowSrc, colSrc, dim, stekovi, state, row, col):#nije proradilo jos veceras ce 
+def allValidStacks( dim, state, row, col, stackInput):#nije proradilo jos veceras ce 
     min=float('inf')
     result=[]
-    for stek in stekovi:
+    print("usao je u all-Valid-stacks")
+    for stek in state.stekovi:
         rowDest=stackToCoor(stek, state)[0]
         colDest=stackToCoor(stek, state)[1]
         print([rowDest, colDest])
-        if(coorToStack(row+1, col+1, dim, stekovi)!=stek and 
-           coorToStack(row, col, dim, stekovi)!=stek and
-           coorToStack(row-1, col-1, dim, stekovi)!=stek and
-             coorToStack(row-1, col+1, dim, stekovi)!=stek and
-               coorToStack(row+1, col-1, dim, stekovi)!=stek):#razlicit od posmatranog i njegovih susednih,
+        if not coorToStack(rowDest, colDest, dim, state.stekovi).is_empty() and not (rowDest==row and colDest==col) :#razlicit od posmatranog i nije prazan,
             #provera validnosti
-            pom=max(abs(rowSrc-rowDest), abs(colSrc-colDest))
-            if(pom<min):
-                min=pom
-                result=[]
-                result.append((rowDest,colDest))
-            elif(pom==min):
-                result.append((rowDest,colDest))
+            if not StackCapacity(HowMuchFromStack(stackInput,(row,col), state.stekovi, dim),(rowDest,colDest), state.stekovi, dim):
+                continue
+            #za hsrc i hdst
+            elif not isHeightValid(rowDest,colDest, stackInput, dim, state.stekovi):
+                continue
+            print("ispunjava sve uslove")
+            result=[]
+            result.append((rowDest,colDest))
+
+            #da li moze da se prebaci toliko figurica
+            #pom=max(abs(rowSrc-rowDest), abs(colSrc-colDest))
+            #if(pom<min):
+            #    min=pom
+            #    result=[]
+            #    result.append((rowDest,colDest))
+            #elif(pom==min):
+            #    result.append((rowDest,colDest))
+    print(result)
     return result
 
 
@@ -390,7 +416,7 @@ def StackCapacity(adding:int,position:tuple, stekovi:list, dim:int):
     y = col + 2
 
 
-    if stekovi[((row)*x)+y//2 - 1].stackLen()+adding >8:
+    if stekovi[(int)(((row)*x)+y//2 - 1)].stackLen()+adding >8:
         return False
     return True
 

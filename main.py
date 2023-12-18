@@ -2,11 +2,11 @@ from Interface.GameInitializer import intializeGame, gameIsOver
 from Controllers.GameState import GameState
 from Interface.StatePrinter import printWholeTable
 
-from Controllers.TurnController import playTurnWithInputs, closestNonEmptyStack
+from Controllers.TurnController import playTurnWithInputs, allValidStacks
 
 state:GameState = intializeGame(16)
 
 gameIsOver()
 printWholeTable(state)
-#playTurnWithInputs(state)
-print(closestNonEmptyStack(2,2,state.dimension, state.stekovi, state, 1,1 ))
+playTurnWithInputs(state)
+#print(closestNonEmptyStack(2,2,state.dimension, state.stekovi, state, 1,1 ))
