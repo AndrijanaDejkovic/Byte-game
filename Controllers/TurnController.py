@@ -105,7 +105,7 @@ def validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes : list, startPositio
 
     return [item[0] for item in minumumDistancePositions]
 
-def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
+def returnValidMovesForFigure(row, col, stackInput, state):
     
     #za svako neprazno mod isMoveValid
     moveIndexes=[(row-1, col-1), (row+1, col-1), (row-1, col+1), (row+1, col+1)]
@@ -113,19 +113,19 @@ def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
     moveEmptyIndexes=[]
     arrayOfClosestNonEmptyIndexes=[]
     for move in moveIndexes:
-        if coorToStack(move[0], move[1], rowDim, stekovi).is_empty():
+        if coorToStack(move[0], move[1], state).is_empty():
             moveEmptyIndexes.append(move)
             continue 
-        elif not isPositionValidDst(rowDim,(move[0], move[1]), stekovi):
+        elif not isPositionValidDst(state.dimension,(move[0], move[1]), state.stekovi):
             continue
         #kolko se prenosi iz stacka(row,col) na stack u DL
-        elif not StackCapacity(HowMuchFromStack(stackInput,(move[0], move[1]), stekovi, rowDim),(move[0], move[1]), stekovi, rowDim):
+        elif not StackCapacity(HowMuchFromStack(stackInput,(move[0], move[1]), state.stekovi, state.dimension),(move[0], move[1]), stekovi, rowDim):
             continue
-        elif not isHeightValid(move[0], move[1], stackInput, rowDim, stekovi):
+        elif not isHeightValid(move[0], move[1], stackInput, state.dimension, state.stekovi):
             continue
         validMovesArray.append(move)
     if len(moveEmptyIndexes)==4:#ako su sva polja susedna prazna
-        arrayOfClosestNonEmptyIndexes=allValidStacks(rowDim, state, row, col, stackInput)
+        arrayOfClosestNonEmptyIndexes=allValidStacks(state.dimension, state, row, col, stackInput)
         validMovesArray = validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes, (row, col), state)
         #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
@@ -177,11 +177,11 @@ def getValidMoveInput():
     return move
 #proverava da li je moguc pomeraj (ivica)
 
-def coorToStack(row, col, dim, stekovi):
+def coorToStack(row, col, state):
 
-    x = int(dim/2)
+    x = int(state.dimension/2)
     y = int(col + 2)
-    return stekovi[(int)(((row)*x)+y//2 - 1)]
+    return state.stekovi[(int)(((row)*x)+y//2 - 1)]
 
 def stackToCoor(stack, state):#nije provereno da l radi
     row=state.stekovi.index(stack)//(state.dimension/2)
@@ -279,7 +279,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
             return False
         #i ako je dest stack prazan pozovi fju isThisFieldInValidMoves(za row i col npr)
         elif (coorToStack(row-1,col-1, dim, stekovi)).is_empty():
-            if (row-1, col-1) in returnValidMovesForFigure(row, col, dim, stekovi, stackInput, newState):
+            if (row-1, col-1) in returnValidMovesForFigure(row, col, stackInput, newState):
                 print("prazno polje je validno")
                 return True
         elif not isPositionValidDst(rowDim,(row-1,col-1), stekovi):
@@ -299,7 +299,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         if not isSignCorrect(row, col, stackInput, dim,stekovi, newState):
             return False
         elif (coorToStack(row+1,col-1, dim, stekovi)).is_empty():
-            if (row+1, col-1) in returnValidMovesForFigure(row, col, dim, stekovi,stackInput, newState):
+            if (row+1, col-1) in returnValidMovesForFigure(row, col,stackInput, newState):
                 print("prazno polje je validno")
                 
                 return True
@@ -318,7 +318,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
         if not isSignCorrect(row, col, stackInput, dim,stekovi, newState):
             return False
         elif (coorToStack(row-1,col+1, dim, stekovi)).is_empty():
-            if (row-1, col+1) in returnValidMovesForFigure(row, col, dim, stekovi, stackInput, newState):
+            if (row-1, col+1) in returnValidMovesForFigure(row, col, stackInput, newState):
                 print("prazno polje je validno")
 
                 return True
@@ -338,7 +338,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
             print("sign not correct")
             return False
         elif (coorToStack(row+1,col+1, dim, stekovi)).is_empty():
-            if (row-1, col-1) in returnValidMovesForFigure(row, col, dim, stekovi, stackInput, newState):
+            if (row-1, col-1) in returnValidMovesForFigure(row, col, stackInput, newState):
                 print("prazno polje je validno")
 
                 return True
@@ -386,7 +386,7 @@ def isMoveValid(stekovi:list, rowDim:int, position:tuple,moveInput,stackInput, d
 #returnAllValidMoves --- dodace se fja koja ce da poz returnValidMovesForFigure u for petlji za svaku figuru tog znaka!
 #predaja potez
 
-def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
+def returnValidMovesForFigure(row, col, stackInput, state):
     
     #za svako neprazno mod isMoveValid
     moveIndexes=[(row-1, col-1), (row+1, col-1), (row-1, col+1), (row+1, col+1)]
@@ -394,20 +394,20 @@ def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
     moveEmptyIndexes=[]
     arrayOfClosestNonEmptyIndexes=[]
     for move in moveIndexes:
-        if coorToStack(move[0], move[1], rowDim, stekovi).is_empty():
+        if coorToStack(move[0], move[1], state.dimension, state.stekovi).is_empty():
             moveEmptyIndexes.append(move)
             continue 
-        elif not isPositionValidDst(rowDim,(move[0], move[1]), stekovi):
+        elif not isPositionValidDst(state.dimension,(move[0], move[1]), state.stekovi):
             continue
         #kolko se prenosi iz stacka(row,col) na stack u DL
-        elif not StackCapacity(HowMuchFromStack(stackInput,(move[0], move[1]), stekovi, rowDim),(move[0], move[1]), stekovi, rowDim):
+        elif not StackCapacity(HowMuchFromStack(stackInput,(move[0], move[1]), state.stekovi, state.dimension),(move[0], move[1]), state.stekovi, state.dimension):
             continue
-        elif not isHeightValid(move[0], move[1], stackInput, rowDim, stekovi):
+        elif not isHeightValid(move[0], move[1], stackInput, state.dimension, state.stekovi):
             continue
         validMovesArray.append(move)
     if len(moveEmptyIndexes)==4:#ako su sva polja susedna prazna
         print("sva su polja okolna prazna")
-        arrayOfClosestNonEmptyIndexes=allValidStacks(rowDim, state, row, col, stackInput)
+        arrayOfClosestNonEmptyIndexes=allValidStacks(state.dimension, state, row, col, stackInput)
         validMovesArray = validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes, (row, col), state)
         #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
