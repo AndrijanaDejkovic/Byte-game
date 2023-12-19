@@ -7,7 +7,7 @@ from Interface.GameInitializer import gameIsOver
 from collections import deque
 
 
-state:GameState = GameState()
+#state:GameState = GameState()
 
 # ===== REKURZIJA - KONCEPT ======= 
 # u ovom slucaju, deosteka nek bude samo brojka kolko figurice(zetona) prenosimo
@@ -546,10 +546,10 @@ def playTurnWithInputs(state:GameState):
             while(True):
             
                 # Send rowDim instead of rowDim-1 because row at the table that user sees starts from 1
-                rowInput = getValidCharToIntInput(0, newState.dimension, "row (A,B,C...)")
-                colInput = getValidIntInput(0, newState.dimension, "column (1,2,3...)")
+                rowInput = getValidCharToIntInput(0, state.dimension, "row (A,B,C...)")
+                colInput = getValidIntInput(0, state.dimension, "column (1,2,3...)")
 
-                if not isPositionValidSrc(newState.dimension,(rowInput, colInput),newState.stekovi):
+                if not isPositionValidSrc(state.dimension,(rowInput, colInput),state.stekovi):
                     print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
                     continue
                 
