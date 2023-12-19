@@ -119,7 +119,7 @@ def returnValidMovesForFigure(row, col, stackInput, state):
         elif not isPositionValidDst(state.dimension,(move[0], move[1]), state.stekovi):
             continue
         #kolko se prenosi iz stacka(row,col) na stack u DL
-        elif not StackCapacity(HowMuchFromStack(stackInput,(move[0], move[1]), state.stekovi, state.dimension),(move[0], move[1]), stekovi, rowDim):
+        elif not StackCapacity(HowMuchFromStack(stackInput,(move[0], move[1]), state.stekovi, state.dimension),(move[0], move[1]), state.stekovi, state.dimension):
             continue
         elif not isHeightValid(move[0], move[1], stackInput, state.dimension, state.stekovi):
             continue
