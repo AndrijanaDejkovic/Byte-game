@@ -113,7 +113,7 @@ def returnValidMovesForFigure(row, col, stackInput, state):
     moveEmptyIndexes=[]
     arrayOfClosestNonEmptyIndexes=[]
     for move in moveIndexes:
-        if coorToStack(move[0], move[1], state).is_empty():
+        if coorToStack(move[0], move[1], state.dimension, state.stekovi).is_empty():
             moveEmptyIndexes.append(move)
             continue 
         elif not isPositionValidDst(state.dimension,(move[0], move[1]), state.stekovi):
@@ -177,11 +177,11 @@ def getValidMoveInput():
     return move
 #proverava da li je moguc pomeraj (ivica)
 
-def coorToStack(row, col, state):
+def coorToStack(row, col, dim, stekovi):
 
-    x = int(state.dimension/2)
+    x = int(dim/2)
     y = int(col + 2)
-    return state.stekovi[(int)(((row)*x)+y//2 - 1)]
+    return stekovi[(int)(((row)*x)+y//2 - 1)]
 
 def stackToCoor(stack, state):#nije provereno da l radi
     row=state.stekovi.index(stack)//(state.dimension/2)
