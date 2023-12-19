@@ -43,11 +43,11 @@ def isPositionInMatrix(position :(int,int), dimension : int) :
     return position[0] >=0 and position[0] < dimension and position[1] >=0 and position[1] < dimension
 
 def shortestPathBetweenPositions(state : GameState, startPosition : (int, int), endPosition : (int, int)) :
-    rows, cols = state.dimension
+    rows =  state.dimension
+    cols = state.dimension
     visited = [[False] * cols for _ in range(rows)]
-    moves = [(-1, 1), (1, 1), (1, -1), (1, 1)]
+    moves = [(-1, 1), (-1, -1), (1, -1), (1, 1)]
     queue = deque([(startPosition[0], startPosition[1], 0)])
-    print("bfs")
     while queue:
         current_x, current_y, distance = queue.popleft()
 
@@ -63,16 +63,22 @@ def shortestPathBetweenPositions(state : GameState, startPosition : (int, int), 
             new_x, new_y = current_x + move_x, current_y + move_y
             #print(current_x, current_y, distance)
             # Check if the new position is valid
-            if isPositionInMatrix((new_x, new_y), state.dimension) and (state.matrix[new_x][new_y] == None or (isinstance(state.matrix[new_x][new_y], Stack) and (new_x, new_y) == endPosition)) :
-                queue.append((new_x, new_y, distance + 1))
+
+            if isPositionInMatrix((new_x, new_y), state.dimension) == True : 
+                if ((new_x, new_y) == startPosition):
+                    continue
+                if (state.matrix[new_x][new_y] == None or (isinstance(state.matrix[new_x][new_y], Stack) and (new_x, new_y) == endPosition)) :
+                    queue.append((new_x, new_y, distance + 1))
+            else:
+                continue
 
     # If no path is found
     return -1
 
 def validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes : list, startPosition : (int, int), state : GameState) :
-    minumumDistancePositions = [(startPosition, -1)]
+    minumumDistancePositions = [(startPosition, 10000)]
     distances = []
-    print("ulazi u andrijanino")
+    print(arrayOfClosestNonEmptyIndexes)
     for currentStackIndex in arrayOfClosestNonEmptyIndexes :
         relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
@@ -80,18 +86,49 @@ def validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes : list, startPositio
             new_position = (startPosition[0] + dx, startPosition[1] + dy)
 
             if isPositionInMatrix(new_position, state.dimension):
-                distance = 1 + shortestPathBetweenPositions(state, new_position, currentStackIndex)
-                distances.append((new_position, distance))
+                print(shortestPathBetweenPositions(state, new_position, currentStackIndex))
+                x = shortestPathBetweenPositions(state, new_position, currentStackIndex)
+                if (x > -1):
+                    distance = x + 1
+                    distances.append((new_position, distance))
+                    print("ovo ja sad proveravam")
+                    print((currentStackIndex[0], currentStackIndex[1]))
+                    print((new_position, distance))
 
         sortedDistances = sorted(distances, key=lambda x: x[1])
-        if sortedDistances[0][1] < minumumDistancePositions[0][1]:
+        if sortedDistances[0][1] <= minumumDistancePositions[0][1]:
             minumumDistancePositions.clear()
             for e in sortedDistances :
                 if (e[1] == sortedDistances[0][1]) :
                     minumumDistancePositions.append(e)
+    print(minumumDistancePositions)
 
     return [item[0] for item in minumumDistancePositions]
 
+def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
+    
+    #za svako neprazno mod isMoveValid
+    moveIndexes=[(row-1, col-1), (row+1, col-1), (row-1, col+1), (row+1, col+1)]
+    validMovesArray=[]
+    moveEmptyIndexes=[]
+    arrayOfClosestNonEmptyIndexes=[]
+    for move in moveIndexes:
+        if coorToStack(move[0], move[1], rowDim, stekovi).is_empty():
+            moveEmptyIndexes.append(move)
+            continue 
+        elif not isPositionValidDst(rowDim,(move[0], move[1]), stekovi):
+            continue
+        #kolko se prenosi iz stacka(row,col) na stack u DL
+        elif not StackCapacity(HowMuchFromStack(stackInput,(move[0], move[1]), stekovi, rowDim),(move[0], move[1]), stekovi, rowDim):
+            continue
+        elif not isHeightValid(move[0], move[1], stackInput, rowDim, stekovi):
+            continue
+        validMovesArray.append(move)
+    if len(moveEmptyIndexes)==4:#ako su sva polja susedna prazna
+        arrayOfClosestNonEmptyIndexes=allValidStacks(rowDim, state, row, col, stackInput)
+        validMovesArray = validMovesToNonEmtyStacks(arrayOfClosestNonEmptyIndexes, (row, col), state)
+        #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
+    return validMovesArray
 
 
 
@@ -379,7 +416,8 @@ def returnValidMovesForFigure(row, col, rowDim, stekovi, stackInput, state):
 def allValidStacks( dim, state, row, col, stackInput):#nije proradilo jos veceras ce 
     min=float('inf')
     result=[]
-    print("usao je u all-Valid-stacks")
+    #print("usao je u all-Valid-stacks")
+    result=[]
     for stek in state.stekovi:
         rowDest=stackToCoor(stek, state)[0]
         colDest=stackToCoor(stek, state)[1]
@@ -392,7 +430,6 @@ def allValidStacks( dim, state, row, col, stackInput):#nije proradilo jos vecera
             elif not isHeightValid(rowDest,colDest, stackInput, dim, state.stekovi):
                 continue
             print("ispunjava sve uslove")
-            result=[]
             result.append((rowDest,colDest))
 
             #da li moze da se prebaci toliko figurica
@@ -499,6 +536,7 @@ def playTurnWithInputs(state:GameState):
     newState.maxDimension = state.maxDimension
     newState.playerScore = state.playerScore
     newState.cpuScore = state.cpuScore
+    newState.matrix = state.matrix
     # Kopiranje stekova - moguće je napraviti kopiju stekova jedan po jedan ili prilagoditi njihovo kopiranje
     newState.stekovi = [elem for elem in state.stekovi]
 
@@ -536,7 +574,9 @@ def playTurnWithInputs(state:GameState):
             state.playerScore=newState.playerScore
             state.cpuScore=newState.cpuScore
             state.currentTurn = "O"
+            state.matrix = newState.matrix
             newState.currentTurn="O"
+
             gameIsOver()
             printWholeTable(newState)
 
