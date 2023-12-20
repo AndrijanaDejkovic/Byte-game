@@ -256,7 +256,7 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
             print("sign not correct")
             return False
         elif (coorToStack(row+1,col+1, state)).is_empty():
-            if (row-1, col-1) in returnValidMovesForFigure(row, col, stackInput, state):
+            if (row+1, col+1) in returnValidMovesForFigure(row, col, stackInput, state):
                 print("prazno polje je validno")
                 return True
         elif not isPositionValidDst(state,(row+1,col+1)):
@@ -279,6 +279,16 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
 
 #returnAllValidMoves --- dodace se fja koja ce da poz returnValidMovesForFigure u for petlji za svaku figuru tog znaka!
 #predaja potez
+        
+def returnAllValidMovesForSing(state : GameState) :
+    allValidMoves = []
+    for stack in state.stekovi:
+        if(stack[0] == state.playerSign):
+            position = stackToCoor(stack, state)
+            allValidMoves.append(returnValidMovesForFigure(position[0], position[1], 0, state))
+
+#jos funkcija za sva moguca stanja igre
+
 
 def returnValidMovesForFigure(row, col, stackInput, state):
     dim=state.dimension
@@ -362,13 +372,13 @@ def rekurzija(trenutnoPoljeMatrice:list, deosteka:int, putanja:list, duzinaPuta 
 def validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes : list, startPosition : (int, int), state : GameState) :
     minumumDistancePositions = [(startPosition, 10000)]
     distances = []
+    noPathToThatStack = 0
     print(arrayOfClosestNonEmptyIndexes)
     for currentStackIndex in arrayOfClosestNonEmptyIndexes :
         relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
-
+        noPathToThatStack = 0
         for dx, dy in relative_positions:
             new_position = (startPosition[0] + dx, startPosition[1] + dy)
-
             if isPositionInMatrix(new_position, state.dimension):
                 print(shortestPathBetweenPositions(state, new_position, currentStackIndex))
                 x = shortestPathBetweenPositions(state, new_position, currentStackIndex)
@@ -378,7 +388,10 @@ def validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes : list, startPositi
                     print("ovo ja sad proveravam")
                     print((currentStackIndex[0], currentStackIndex[1]))
                     print((new_position, distance))
-
+                else:
+                    noPathToThatStack+=1
+        if (noPathToThatStack == 4):
+            continue
         sortedDistances = sorted(distances, key=lambda x: x[1])
         if sortedDistances[0][1] <= minumumDistancePositions[0][1]:
             minumumDistancePositions.clear()
