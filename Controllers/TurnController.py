@@ -187,16 +187,18 @@ def isPositionInMatrix(position :(int,int), dimension : int) :
     return position[0] >=0 and position[0] < dimension and position[1] >=0 and position[1] < dimension
 
 
-#GRANICNI SLUCAJEVI NA OBODIMA TABLE NE RADE, TJ PREBACUJE SE SA DRUGE STRANE!!!!!!!!!!
 def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
     stekovi=state.stekovi
     dim=state.dimension
     row = position[0] #slovo
     col = position[1] #broj
 
+
     if moveInput=="GL":
          #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, state):
+            return False
+        elif(row-1<0 or col-1<0):
             return False
         #i ako je dest stack prazan pozovi fju isThisFieldInValidMoves(za row i col npr)
         elif (coorToStack(row-1,col-1, state)).is_empty():
@@ -218,6 +220,8 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
         #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, state):
             return False
+        elif(row+1<0 or col-1<0):
+            return False
         elif (coorToStack(row+1,col-1, state)).is_empty():
             if (row+1, col-1) in returnValidMovesForFigure(row, col, stackInput, state):
                 print("prazno polje je validno")              
@@ -235,6 +239,8 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
     elif moveInput=="GD":
         #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput,state):
+            return False
+        elif(row-1<0 or col+1<0):
             return False
         elif (coorToStack(row-1,col+1, state)).is_empty():
             if (row-1, col+1) in returnValidMovesForFigure(row, col, stackInput, state):
@@ -254,6 +260,8 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
          #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, state):
             print("sign not correct")
+            return False
+        elif(row+1<0 or col+1<0):
             return False
         elif (coorToStack(row+1,col+1, state)).is_empty():
             if (row+1, col+1) in returnValidMovesForFigure(row, col, stackInput, state):
