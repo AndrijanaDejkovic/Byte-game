@@ -187,7 +187,7 @@ def isPositionInMatrix(position :(int,int), dimension : int) :
     return position[0] >=0 and position[0] < dimension and position[1] >=0 and position[1] < dimension
 
 
-#da li moze da se izvrsi pokret
+#GRANICNI SLUCAJEVI NA OBODIMA TABLE NE RADE, TJ PREBACUJE SE SA DRUGE STRANE!!!!!!!!!!
 def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
     stekovi=state.stekovi
     dim=state.dimension
