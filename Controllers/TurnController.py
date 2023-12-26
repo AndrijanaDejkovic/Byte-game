@@ -277,16 +277,45 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
 
 
 
-#returnAllValidMoves --- dodace se fja koja ce da poz returnValidMovesForFigure u for petlji za svaku figuru tog znaka!
-#predaja potez
-        
+#vraca sve moguce poteze za igraca sa tim znakom za trenutno stanje, plus koliko se sklanja sa steka i od koje pozicje se sklanja
+#jer nam treba za funkciju play valid turn instantly    
 def returnAllValidMovesForSing(state : GameState) :
     allValidMoves = []
     for stack in state.stekovi:
-        if(stack[0] == state.playerSign):
-            position = stackToCoor(stack, state)
-            allValidMoves.append(returnValidMovesForFigure(position[0], position[1], 0, state))
+        for positionInStack in len(stack):
+            if(stack[positionInStack] == state.playerSign):
+                positionFrom = stackToCoor(stack, state)
+                coordinatesForMoves = returnValidMovesForFigure(positionFrom[0], positionFrom[1], positionInStack, state)
+                allValidMoves.append((positionFrom, coordinatesForMoves, positionInStack))
+    return allValidMoves
 
+#za minmax nam trebaju sva moguca narednja stanja
+def returnAllPossibleNextStates(state : GameState) :
+    moves = []
+    opponentSign = "O" if state.currentTurn == "X" else "X"
+    moves.append(returnAllValidMovesForSing(state, state.currentTurn))
+    moves.append(returnAllValidMovesForSing(state, opponentSign))
+
+    possibleNextStates = []
+
+    for i in range(0, len(moves)):
+        nextState = playValidTurnInstantly(state, moves[i])
+        possibleNextStates.append(nextState)
+    
+    return possibleNextStates
+
+#na osnovu poteza se vrati novo stanje
+def playValidTurnInstantly(state: GameState, move: tuple):
+
+    newState = copy.deepcopy(state)
+    #move[0] je pozocija odakle se prenosi, [1] gde se prenosi, [2] od koje pozicje u steku, to se vidi u funkciji retunAllValidMovesForSign
+    transferFromStack(move[0], move[2], move[1], newState)
+    pointsUpdate(state)
+    newState.currentTurn = "O" if state.currentTurn == "X" else "X"
+
+    return newState
+
+        
 #jos funkcija za sva moguca stanja igre
 
 
