@@ -302,6 +302,9 @@ def returnAllValidMovesForSing(state : GameState, sign : str) :
             if(stack.array[positionInStack] == sign):
                 positionFrom = stackToCoor(stack, state)
                 coordinatesForMoves = returnValidMovesForFigure(positionFrom[0], positionFrom[1], positionInStack, state)
+                if coordinatesForMoves == []:
+                    continue
+                #print(coordinatesForMoves)
                 resultStrings = [makeStringForMove(coordinatesForMove, positionFrom) for coordinatesForMove in coordinatesForMoves]
                 allValidMoves+=[(positionFrom, resultString, positionInStack) for resultString in resultStrings]
     return allValidMoves
@@ -323,6 +326,7 @@ def returnAllPossibleNextStates(state : GameState) :
 #na osnovu poteza se vrati novo stanje
 def playValidTurnInstantly(state: GameState, move: tuple):
 
+    #print(move)
     newState = copy.deepcopy(state)
     #move[0] je pozocija odakle se prenosi, [1] gde se prenosi, [2] od koje pozicje u steku, to se vidi u funkciji retunAllValidMovesForSign
     transferFromStack(move[0], move[2], move[1], newState)
@@ -333,6 +337,15 @@ def playValidTurnInstantly(state: GameState, move: tuple):
 
         
 #jos funkcija za sva moguca stanja igre
+
+def numberOfNeighbours(position : (int, int), state : GameState):
+    relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+    neighbours = 0
+    for i in relative_positions:
+        if isPositionInMatrix((position + i[0], position + i[1]), state.dimension):
+            neighbours += 1
+
+    return neighbours
 
 
 def returnValidMovesForFigure(row, col, stackInput, state):
@@ -355,12 +368,33 @@ def returnValidMovesForFigure(row, col, stackInput, state):
         elif not isHeightValid(move[0], move[1], stackInput, state):
             continue
         validMovesArray.append(move)
-    if len(moveEmptyIndexes)==4:#ako su sva polja susedna prazna
-        #print("sva su polja okolna prazna")
-        arrayOfClosestNonEmptyIndexes=allValidStacks(state, row, col, stackInput)
-        validMovesArray = validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes, (row, col), state)
+    print("Ovde proveravam koliko ima poteza")
+    print(moveEmptyIndexes)
+    if len(moveEmptyIndexes)==numberOfNeighbours:#ako su sva polja susedna prazna
+        if(stackInput != 0) :
+            return []
+        validMovesArray = movesToNonEmptyStack((row, col), state)
         #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
+
+def movesToNonEmptyStack(startPosition : (int, int), state : GameState):
+    relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+    startingPositions = [startPosition]
+    for i in range(len(relative_positions)):
+        if isPositionInMatrix((startPosition[0] + relative_positions[i][0], startPosition[1] + relative_positions[i][1]), state.dimension):
+            startingPositions.append((startPosition[0] + relative_positions[i][0], startPosition[1] + relative_positions[i][1]))
+
+    pathLengths = []
+    for position in startingPositions :
+        minLen = 10000
+        for stack in state.stekovi:
+            if (stack.stackLen() == 0):
+                continue    
+            position = stackToCoor(stack, state)
+            minLen = min(minLen, max(abs(startPosition[0] - position[0]), abs(startPosition[1] - position[1])))
+        pathLengths.append(minLen)
+    
+    return [startingPositions[i] for i in range(1, len(pathLengths)) if pathLengths[i] == pathLengths[0] - 1]
 
 
 def allValidStacks( state, row, col, stackInput):
@@ -385,34 +419,6 @@ def allValidStacks( state, row, col, stackInput):
     #print(result)
     return result
 
-
-# ===== REKURZIJA - KONCEPT ======= 
-# u ovom slucaju, deosteka nek bude samo brojka kolko figurice(zetona) prenosimo
-# 
-def rekurzija(trenutnoPoljeMatrice:list, deosteka:int, putanja:list, duzinaPuta = 0):
-    # Ispitati da li je polje u matrici - tj ako nije u matrici, nevalidno je
-        # if uMatrici(trenutnoPoljeMatrice) == false: return [None, None, None]
-    # Ispitati da li je trenutno polje stek ili je prazno
-        # if prazno(trenutnoPoljeMatrice) == false:
-            #if mozemoDaStavimoDeoSteka(deosteka, stekNaTrenutnomPoljuMatrice) == true: ---> NALAZIMO SE NA NEKOM STEKU, I MOZEMO DA STAVIMO TOLKO FIGURICA KOLKO PRENOSIMO
-                #return [trenutnoPoljeMatrice, putanja[prvoNarednoPolje], duzinaPuta] ---- ubaciti i duzinu puta u kalkulaciju
-            #else:
-                #return [None, None, None] -> dosli smo do polja koje je stek, ALI taj stek je recimo skoro pun i ne mozemo da stavimo "deosteka", izlazimo iz ove putanje jer ne mozemo dalje
-        # else:
-            #duzinaPuta++;
-            #putanja.append(trenutnoPoljeMatrice) --- ovo nece bas da radi najbolje, ako npr dodjemo na jedno prazno polje, a sledece polje nam ne daje validan potez,
-            #samo razmisliti kako se dodaju i/ili uklanjaju stvari iz putanje, da bi radilo dobro
-            
-    # Svejedno je kojim smerom, ali probamo prvo GORE LEVO
-    #rekurzija([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]-1], 3, putanja.append([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]-1]))
-    # DOLE LEVO 
-    #rekurzija([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]-1], 3, putanja.append([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]-1]))
-    # GORE DESNO
-    #rekurzija([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]+1], 3, putanja.append([trenutnoPoljeMatrice[0]-1, trenutnoPoljeMatrice[1]+1]))
-    # DOLE DESNO
-    #rekurzija([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]+1], 3, putanja.append([trenutnoPoljeMatrice[0]+1, trenutnoPoljeMatrice[1]+1]))
-
-    return [None, None, None]
 
 def validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes : list, startPosition : (int, int), state : GameState) :
     minumumDistancePositions = [(startPosition, 10000)]
@@ -443,7 +449,10 @@ def validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes : list, startPositi
             for e in sortedDistances :
                 if (e[1] == sortedDistances[0][1]) :
                     minumumDistancePositions.append(e)
-    #print(minumumDistancePositions)
+    print(minumumDistancePositions)
+
+    if (minumumDistancePositions == [(startPosition, 10000)]):
+        return []
 
     return [item[0] for item in minumumDistancePositions]
 
