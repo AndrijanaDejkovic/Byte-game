@@ -197,14 +197,19 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
     if moveInput=="GL":
          #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, state):
+            print(colored("You can't play with this figure, try again!", 'red', attrs=['bold']))
             return False
-        elif(row-1<0 or col-1<0):
+        elif not isPositionInMatrix((row-1,col-1),state.dimension):
+            print(colored("Destination out of bounds, try again!", 'red', attrs=['bold']))
             return False
         #i ako je dest stack prazan pozovi fju isThisFieldInValidMoves(za row i col npr)
         elif (coorToStack(row-1,col-1, state)).is_empty():
             if (row-1, col-1) in returnValidMovesForFigure(row, col, stackInput, state):
                 print("prazno polje je validno")
                 return True
+            else:
+                print("prazno polje nije validno")
+                return False
         elif not isPositionValidDst(state,(row-1,col-1)):
             return False
         #kolko se prenosi iz stacka(row,col) na stack u GL
@@ -219,8 +224,10 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
     elif moveInput=="DL":
         #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, state):
+            print(colored("You can't play with this figure, try again!", 'red', attrs=['bold']))
             return False
-        elif(row+1<0 or col-1<0):
+        elif not isPositionInMatrix((row+1,col-1),state.dimension):
+            print(colored("Destination out of bounds, try again!", 'red', attrs=['bold']))
             return False
         elif (coorToStack(row+1,col-1, state)).is_empty():
             if (row+1, col-1) in returnValidMovesForFigure(row, col, stackInput, state):
@@ -238,9 +245,11 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
         
     elif moveInput=="GD":
         #za player sign i figurica da se poklope
-        if not isSignCorrect(row, col, stackInput,state):
+        if not isSignCorrect(row, col, stackInput, state):
+            print(colored("You can't play with this figure, try again!", 'red', attrs=['bold']))
             return False
-        elif(row-1<0 or col+1<0):
+        elif not isPositionInMatrix((row-1,col+1),state.dimension):
+            print(colored("Destination out of bounds, try again!", 'red', attrs=['bold']))
             return False
         elif (coorToStack(row-1,col+1, state)).is_empty():
             if (row-1, col+1) in returnValidMovesForFigure(row, col, stackInput, state):
@@ -259,9 +268,10 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
     elif moveInput=="DD":
          #za player sign i figurica da se poklope
         if not isSignCorrect(row, col, stackInput, state):
-            print("sign not correct")
+            print(colored("You can't play with this figure, try again!", 'red', attrs=['bold']))
             return False
-        elif(row+1<0 or col+1<0):
+        elif not isPositionInMatrix((row+1,col+1),state.dimension):
+            print(colored("Destination out of bounds, try again!", 'red', attrs=['bold']))
             return False
         elif (coorToStack(row+1,col+1, state)).is_empty():
             if (row+1, col+1) in returnValidMovesForFigure(row, col, stackInput, state):
@@ -357,7 +367,9 @@ def returnValidMovesForFigure(row, col, stackInput, state):
     moveEmptyIndexes=[]
     arrayOfClosestNonEmptyIndexes=[]
     for move in moveIndexes:
-        if coorToStack(move[0], move[1], state).is_empty():
+        if not isPositionInMatrix((move[0], move[1]),state.dimension):  #indeks van matrice
+            continue
+        elif coorToStack(move[0], move[1], state).is_empty():
             moveEmptyIndexes.append(move)
             continue 
         elif not isPositionValidDst(state,(move[0], move[1])):
@@ -369,11 +381,12 @@ def returnValidMovesForFigure(row, col, stackInput, state):
             continue
         validMovesArray.append(move)
     print("Ovde proveravam koliko ima poteza")
-    print(moveEmptyIndexes)
-    if len(moveEmptyIndexes)==numberOfNeighbours:#ako su sva polja susedna prazna
-        if(stackInput != 0) :
+    print('Empty indexes', moveEmptyIndexes)
+    if len(moveEmptyIndexes)==numberOfNeighbours: #ako su sva polja susedna prazna
+        if(stackInput != 0) :  #PRAVILO IGRE
             return []
         validMovesArray = movesToNonEmptyStack((row, col), state)
+        print('validMovesArray',validMovesArray)
         #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
 
