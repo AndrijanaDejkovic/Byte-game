@@ -68,11 +68,11 @@ def coorToStack(row, col, state):
 
 
 def stackToCoor(stack, state):
-    row=state.stekovi.index(stack)//(state.dimension/2)
+    row=state.stekovi.index(stack)//(state.dimension//2)
     if(row%2==0):
-        col=((state.stekovi.index(stack))%(state.dimension/2))*2 
+        col=((state.stekovi.index(stack))%(state.dimension//2))*2 
     else:
-        col=((state.stekovi.index(stack))%(state.dimension/2))*2 +1
+        col=((state.stekovi.index(stack))%(state.dimension//2))*2 +1
     return (row, col)
 
 
@@ -92,7 +92,7 @@ def HowMuchFromStack(stackInput:int,position:tuple, state):
     col = position[1] #broj
     x = int(state.dimension/2)
     y = col + 2
-    pom =state.stekovi[((row)*x)+y//2 - 1].stackLen()
+    pom =state.stekovi[(int)(((row)*x)+y//2 - 1)].stackLen()
     return pom-stackInput
 
 
@@ -283,26 +283,34 @@ def isMoveValid(position:tuple,moveInput,stackInput, state:GameState):
 
 #DRUGA FAZA PROVERE VALJANOSTI
 
-
-
+def makeStringForMove(position : tuple, prevPosition : tuple):
+    difference : tuple = (position[0] - prevPosition[0], position[1] - prevPosition[1])
+    if difference == (-1, -1) :
+        return "GL"
+    elif difference == (-1, 1) :
+        return "GD"
+    elif difference == (1, 1) :
+        return "DD"
+    elif difference == (1, -1) :
+        return "DL"
 #vraca sve moguce poteze za igraca sa tim znakom za trenutno stanje, plus koliko se sklanja sa steka i od koje pozicje se sklanja
 #jer nam treba za funkciju play valid turn instantly    
-def returnAllValidMovesForSing(state : GameState) :
+def returnAllValidMovesForSing(state : GameState, sign : str) :
     allValidMoves = []
     for stack in state.stekovi:
-        for positionInStack in len(stack):
-            if(stack[positionInStack] == state.playerSign):
+        for positionInStack in range(stack.stackLen()):
+            if(stack.array[positionInStack] == sign):
                 positionFrom = stackToCoor(stack, state)
                 coordinatesForMoves = returnValidMovesForFigure(positionFrom[0], positionFrom[1], positionInStack, state)
-                allValidMoves.append((positionFrom, coordinatesForMoves, positionInStack))
+                resultStrings = [makeStringForMove(coordinatesForMove, positionFrom) for coordinatesForMove in coordinatesForMoves]
+                allValidMoves+=[(positionFrom, resultString, positionInStack) for resultString in resultStrings]
     return allValidMoves
 
 #za minmax nam trebaju sva moguca narednja stanja
 def returnAllPossibleNextStates(state : GameState) :
-    moves = []
+    # moves = []
     opponentSign = "O" if state.currentTurn == "X" else "X"
-    moves.append(returnAllValidMovesForSing(state, state.currentTurn))
-    moves.append(returnAllValidMovesForSing(state, opponentSign))
+    moves = returnAllValidMovesForSing(state, state.currentTurn)
 
     possibleNextStates = []
 
@@ -319,7 +327,7 @@ def playValidTurnInstantly(state: GameState, move: tuple):
     #move[0] je pozocija odakle se prenosi, [1] gde se prenosi, [2] od koje pozicje u steku, to se vidi u funkciji retunAllValidMovesForSign
     transferFromStack(move[0], move[2], move[1], newState)
     pointsUpdate(state)
-    newState.currentTurn = "O" if state.currentTurn == "X" else "X"
+    #newState.currentTurn = "O" if state.currentTurn == "X" else "X"
 
     return newState
 
@@ -348,7 +356,7 @@ def returnValidMovesForFigure(row, col, stackInput, state):
             continue
         validMovesArray.append(move)
     if len(moveEmptyIndexes)==4:#ako su sva polja susedna prazna
-        print("sva su polja okolna prazna")
+        #print("sva su polja okolna prazna")
         arrayOfClosestNonEmptyIndexes=allValidStacks(state, row, col, stackInput)
         validMovesArray = validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes, (row, col), state)
         #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
@@ -363,7 +371,7 @@ def allValidStacks( state, row, col, stackInput):
     for stek in state.stekovi:
         rowDest=stackToCoor(stek, state)[0]
         colDest=stackToCoor(stek, state)[1]
-        print([rowDest, colDest])
+        #print([rowDest, colDest])
         if not coorToStack(rowDest, colDest, state).is_empty() and not (rowDest==row and colDest==col) :#razlicit od posmatranog i nije prazan,
             #provera validnosti
             if not StackCapacity(HowMuchFromStack(stackInput,(row,col), state),(rowDest,colDest), state):
@@ -371,10 +379,10 @@ def allValidStacks( state, row, col, stackInput):
             #za hsrc i hdst
             elif not isHeightValid(rowDest,colDest, stackInput, state):
                 continue
-            print("ispunjava sve uslove")
+            #print("ispunjava sve uslove")
             result.append((rowDest,colDest))
 
-    print(result)
+    #print(result)
     return result
 
 
@@ -410,21 +418,21 @@ def validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes : list, startPositi
     minumumDistancePositions = [(startPosition, 10000)]
     distances = []
     noPathToThatStack = 0
-    print(arrayOfClosestNonEmptyIndexes)
+    #print(arrayOfClosestNonEmptyIndexes)
     for currentStackIndex in arrayOfClosestNonEmptyIndexes :
         relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
         noPathToThatStack = 0
         for dx, dy in relative_positions:
             new_position = (startPosition[0] + dx, startPosition[1] + dy)
             if isPositionInMatrix(new_position, state.dimension):
-                print(shortestPathBetweenPositions(state, new_position, currentStackIndex))
+                #print(shortestPathBetweenPositions(state, new_position, currentStackIndex))
                 x = shortestPathBetweenPositions(state, new_position, currentStackIndex)
                 if (x > -1):
                     distance = x + 1
                     distances.append((new_position, distance))
-                    print("ovo ja sad proveravam")
-                    print((currentStackIndex[0], currentStackIndex[1]))
-                    print((new_position, distance))
+                    #print("ovo ja sad proveravam")
+                    #print((currentStackIndex[0], currentStackIndex[1]))
+                    #print((new_position, distance))
                 else:
                     noPathToThatStack+=1
         if (noPathToThatStack == 4):
@@ -435,7 +443,7 @@ def validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes : list, startPositi
             for e in sortedDistances :
                 if (e[1] == sortedDistances[0][1]) :
                     minumumDistancePositions.append(e)
-    print(minumumDistancePositions)
+    #print(minumumDistancePositions)
 
     return [item[0] for item in minumumDistancePositions]
 
@@ -473,7 +481,7 @@ def shortestPathBetweenPositions(state : GameState, startPosition : (int, int), 
 
 
 
-def transferFromStack(position, stackInput,moveInput, state):
+def transferFromStack(position : tuple, stackInput, moveInput, state):
      stekovi=state.stekovi
      dim=state.dimension
      row = position[0] #slovo
@@ -487,10 +495,10 @@ def transferFromStack(position, stackInput,moveInput, state):
      yNew=colNew+2
     
      for i in range (HowMuchFromStack(stackInput, position, state)):
-           transfer.append(stekovi[((row)*x)+y//2 - 1].pop())
+           transfer.append(stekovi[(int)(((row)*x)+y//2 - 1)].pop())
      for i in range (1, len(transfer)+1):
 
-        stekovi[((rowNew)*x)+yNew//2 - 1].push(transfer[-i])
+        stekovi[int(((rowNew)*x)+yNew//2 - 1)].push(transfer[-i])
 
 
 def pointsUpdate(state):
@@ -509,70 +517,72 @@ def playTurnWithInputs(state:GameState):
     stackInput=-1
     moveInput= chr(0)
 
-    while(gameIsOver()==False):
-        if state.currentTurn == "X":
-            print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
-            while(True):
+   
+    if state.currentTurn == "X":
+        print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
+        while(True):
+        
+            rowInput = getValidCharToIntInput(0, state.dimension, "row (A,B,C...)")
+            colInput = getValidIntInput(0, state.dimension, "column (1,2,3...)")
+
+            if not isPositionValidSrc(state,(rowInput, colInput)):
+                print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
+                continue
             
-                rowInput = getValidCharToIntInput(0, state.dimension, "row (A,B,C...)")
-                colInput = getValidIntInput(0, state.dimension, "column (1,2,3...)")
+            stackInput=getValidStackInput(0,8,"stack (0,1,2..)")   #0 do 7
 
-                if not isPositionValidSrc(state,(rowInput, colInput)):
-                    print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
-                    continue
-                
-                stackInput=getValidStackInput(0,8,"stack (0,1,2..)")   #0 do 7
-
-                if not isStackPosValid(stackInput,(rowInput, colInput),state):
-                    print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
-                    continue
-                
-                moveInput=getValidMoveInput()
-
-                if not isMoveValid( (rowInput, colInput),moveInput,stackInput, state):
-                    print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
-                    continue
-                
-                else: break
-
-            #push i pop 
-            transferFromStack((rowInput, colInput), stackInput, moveInput, state)
-            pointsUpdate(state)
-            state.currentTurn = "O"
-            gameIsOver()
-            printWholeTable(state)
-
-
-        elif state.currentTurn == "O":
-            print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
-            while(True):
+            if not isStackPosValid(stackInput,(rowInput, colInput),state):
+                print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
+                continue
             
-                rowInput = getValidCharToIntInput(0, state.dimension, "row (A,B,C...)")
-                colInput = getValidIntInput(0, state.dimension, "column (1,2,3...)")
+            moveInput=getValidMoveInput()
 
-                if not isPositionValidSrc(state,(rowInput, colInput)):
-                    print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
-                    continue
-                
-                stackInput=getValidStackInput(0,8,"stack (0,1,2..)")   #0 do 7
-                
-                if not isStackPosValid(stackInput, (rowInput, colInput),state):
-                    print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
-                    continue
-                
-                moveInput=getValidMoveInput()
+            if not isMoveValid( (rowInput, colInput),moveInput,stackInput, state):
+                print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
+                continue
+            
+            else: break
 
-                if not isMoveValid((rowInput, colInput),moveInput,stackInput, state):
-                    print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
-                    continue
-                
-                else: break
+        #push i pop 
+        transferFromStack((rowInput, colInput), stackInput, moveInput, state)
+        pointsUpdate(state)
+        state.currentTurn = "O"
+        gameIsOver()
+        printWholeTable(state)
 
-            #push i pop 
-            transferFromStack((rowInput, colInput), stackInput, moveInput, state)
-            pointsUpdate(state)
-            state.currentTurn = "X"
-            gameIsOver()
-            printWholeTable(state)
+
+    elif state.currentTurn == "O":
+        print(colored(f'\nPotez {state.currentTurn}:', 'magenta', attrs=['bold']))
+        while(True):
+        
+            rowInput = getValidCharToIntInput(0, state.dimension, "row (A,B,C...)")
+            colInput = getValidIntInput(0, state.dimension, "column (1,2,3...)")
+
+            if not isPositionValidSrc(state,(rowInput, colInput)):
+                print(colored("There is no stack here or it is empty, try again!", 'red', attrs=['bold']))
+                continue
+            
+            stackInput=getValidStackInput(0,8,"stack (0,1,2..)")   #0 do 7
+            
+            if not isStackPosValid(stackInput, (rowInput, colInput),state):
+                print(colored("There are not enough figures on a stack, try again!", 'red', attrs=['bold']))
+                continue
+            
+            moveInput=getValidMoveInput()
+
+            if not isMoveValid((rowInput, colInput),moveInput,stackInput, state):
+                print(colored("You can't place stack here, try again!", 'red', attrs=['bold']))
+                continue
+            
+            else: break
+
+        #push i pop 
+        transferFromStack((rowInput, colInput), stackInput, moveInput, state)
+        pointsUpdate(state)
+        state.currentTurn = "X"
+        gameIsOver()
+        printWholeTable(state)
+
+    return state
 
 

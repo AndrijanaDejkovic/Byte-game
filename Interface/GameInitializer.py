@@ -74,8 +74,6 @@ def initializeGameState(dim:int, whoPlaysFirst:str):
     state.dimension = dim
     state.stekovi = makeBegginingStacks(dim)
     state.matrix = makeBeginningMatrix(dim, state.stekovi)
-    print("novo")
-    print(state.matrix[1][1])
     return state
 
 def intializeGame(maxDimension:int):
