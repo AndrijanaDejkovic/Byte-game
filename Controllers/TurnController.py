@@ -380,13 +380,12 @@ def returnValidMovesForFigure(row, col, stackInput, state):
         elif not isHeightValid(move[0], move[1], stackInput, state):
             continue
         validMovesArray.append(move)
-    print("Ovde proveravam koliko ima poteza")
     print('Empty indexes', moveEmptyIndexes)
     if len(moveEmptyIndexes)==numberOfNeighbours: #ako su sva polja susedna prazna
         if(stackInput != 0) :  #PRAVILO IGRE
             return []
         validMovesArray = movesToNonEmptyStack((row, col), state)
-        print('validMovesArray',validMovesArray)
+        #print('validMovesArray',validMovesArray)
         #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
 
