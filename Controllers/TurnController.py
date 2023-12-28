@@ -303,9 +303,10 @@ def makeStringForMove(position : tuple, prevPosition : tuple):
         return "DD"
     elif difference == (1, -1) :
         return "DL"
+    
 #vraca sve moguce poteze za igraca sa tim znakom za trenutno stanje, plus koliko se sklanja sa steka i od koje pozicje se sklanja
 #jer nam treba za funkciju play valid turn instantly    
-def returnAllValidMovesForSing(state : GameState, sign : str) :
+def returnAllValidMovesForSign(state : GameState, sign : str) :
     allValidMoves = []
     for stack in state.stekovi:
         for positionInStack in range(stack.stackLen()):
@@ -323,7 +324,7 @@ def returnAllValidMovesForSing(state : GameState, sign : str) :
 def returnAllPossibleNextStates(state : GameState) :
     # moves = []
     opponentSign = "O" if state.currentTurn == "X" else "X"
-    moves = returnAllValidMovesForSing(state, state.currentTurn)
+    moves = returnAllValidMovesForSign(state, state.currentTurn)
 
     possibleNextStates = []
 
