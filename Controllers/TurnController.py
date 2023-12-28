@@ -401,37 +401,38 @@ def movesToNonEmptyStack(startPosition : (int, int), state : GameState):
     for position in startingPositions :
         minLen = 10000
         for stack in state.stekovi:
-            if (stack.stackLen() == 0):
+            if (stack.is_empty()):
                 continue    
             positionNew = stackToCoor(stack, state)
+            if not (startPosition[0]==positionNew[0] and startPosition[1]==positionNew[1]): #da ne gleda centralni, jer on ima stackove
+                continue
             minLen = min(minLen, max(abs(positionNew[0] - position[0]), abs(positionNew[1] - position[1])))
         pathLengths.append(minLen)
     
     return [startingPositions[i] for i in range(1, len(pathLengths)) if pathLengths[i] == pathLengths[0] - 1]
 
 
-def allValidStacks( state, row, col, stackInput):
-    dim=state.dimension
-    min=float('inf')
-    result=[]
-    result=[]
-    for stek in state.stekovi:
-        rowDest=stackToCoor(stek, state)[0]
-        colDest=stackToCoor(stek, state)[1]
-        #print([rowDest, colDest])
-        if not coorToStack(rowDest, colDest, state).is_empty() and not (rowDest==row and colDest==col) :#razlicit od posmatranog i nije prazan,
-            #provera validnosti
-            if not StackCapacity(HowMuchFromStack(stackInput,(row,col), state),(rowDest,colDest), state):
-                continue
-            #za hsrc i hdst
-           
-            elif not isHeightValid(rowDest,colDest, stackInput, state):
-                continue
-            #print("ispunjava sve uslove")
-            result.append((rowDest,colDest))
-
-    #print(result)
-    return result
+#def allValidStacks( state, row, col, stackInput):
+#    dim=state.dimension
+#    min=float('inf')
+#    result=[]
+#    for stek in state.stekovi:
+#        rowDest=stackToCoor(stek, state)[0]
+#        colDest=stackToCoor(stek, state)[1]
+#        #print([rowDest, colDest])
+#        if not coorToStack(rowDest, colDest, state).is_empty() and not (rowDest==row and colDest==col) :#razlicit od posmatranog i nije prazan,
+#            #provera validnosti
+#            if not StackCapacity(HowMuchFromStack(stackInput,(row,col), state),(rowDest,colDest), state):
+#                continue
+#            #za hsrc i hdst
+#           
+#            elif not isHeightValid(rowDest,colDest, stackInput, state):
+#                continue
+#            #print("ispunjava sve uslove")
+#            result.append((rowDest,colDest))
+#
+#    #print(result)
+#    return result
 
 
 def validMovesToNonEmptyStacks(arrayOfClosestNonEmptyIndexes : list, startPosition : (int, int), state : GameState) :
