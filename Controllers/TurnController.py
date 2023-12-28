@@ -340,7 +340,7 @@ def playValidTurnInstantly(state: GameState, move: tuple):
     newState = copy.deepcopy(state)
     #move[0] je pozocija odakle se prenosi, [1] gde se prenosi, [2] od koje pozicje u steku, to se vidi u funkciji retunAllValidMovesForSign
     transferFromStack(move[0], move[2], move[1], newState)
-    pointsUpdate(state)
+    pointsUpdate(newState)
     #newState.currentTurn = "O" if state.currentTurn == "X" else "X"
 
     return newState
@@ -380,12 +380,12 @@ def returnValidMovesForFigure(row, col, stackInput, state):
         elif not isHeightValid(move[0], move[1], stackInput, state):
             continue
         validMovesArray.append(move)
-    print('Empty indexes', moveEmptyIndexes)
+    #print('Empty indexes', moveEmptyIndexes)
     if len(moveEmptyIndexes)==numberOfNeighbours: #ako su sva polja susedna prazna
         if(stackInput != 0) :  #PRAVILO IGRE
             return []
         validMovesArray = movesToNonEmptyStack((row, col), state)
-        #print('validMovesArray',validMovesArray)
+        print('validMovesArray',validMovesArray)
         #andrijana nadje indekse na koje moze da ide i to stavlja u validMovesArray
     return validMovesArray
 
