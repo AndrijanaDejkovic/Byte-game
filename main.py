@@ -19,13 +19,13 @@ while not isGameFinished:
         if state.playerSign == "X":
             state = playTurnWithInputs(state)
         else:
-            state = minMax(state, 2)
+            state = minMax(state, 3)
             #state = playValidTurnInstantly(state, minMaxState[0].minMaxGeneratedTurns[0][0], minMaxState[0].minMaxGeneratedTurns[0][1])
     else:
         if state.playerSign == "O":
             state = playTurnWithInputs(state)
         else:
-            state = minMax(state, 2)
+            state = minMax(state, 3)
             #state = playValidTurnInstantly(state, minMaxState[0].minMaxGeneratedTurns[0][0], minMaxState[0].minMaxGeneratedTurns[0][1])
     printWholeTable(state)
     state.currentTurn = "X" if turn == "O" else "O"
