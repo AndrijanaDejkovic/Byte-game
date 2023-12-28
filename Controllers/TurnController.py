@@ -353,7 +353,7 @@ def numberOfNeighbours(position : (int, int), state : GameState):
     relative_positions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
     neighbours = 0
     for i in relative_positions:
-        if isPositionInMatrix((position + i[0], position + i[1]), state.dimension):
+        if isPositionInMatrix((position[0] + i[0], position[1] + i[1]), state.dimension):
             neighbours += 1
 
     return neighbours
@@ -382,7 +382,7 @@ def returnValidMovesForFigure(row, col, stackInput, state):
             continue
         validMovesArray.append(move)
     #print('Empty indexes', moveEmptyIndexes)
-    if len(moveEmptyIndexes)==numberOfNeighbours: #ako su sva polja susedna prazna
+    if len(moveEmptyIndexes)==numberOfNeighbours((row, col), state): #ako su sva polja susedna prazna
         if(stackInput != 0) :  #PRAVILO IGRE
             return []
         validMovesArray = movesToNonEmptyStack((row, col), state)
@@ -403,8 +403,8 @@ def movesToNonEmptyStack(startPosition : (int, int), state : GameState):
         for stack in state.stekovi:
             if (stack.stackLen() == 0):
                 continue    
-            position = stackToCoor(stack, state)
-            minLen = min(minLen, max(abs(startPosition[0] - position[0]), abs(startPosition[1] - position[1])))
+            positionNew = stackToCoor(stack, state)
+            minLen = min(minLen, max(abs(positionNew[0] - position[0]), abs(positionNew[1] - position[1])))
         pathLengths.append(minLen)
     
     return [startingPositions[i] for i in range(1, len(pathLengths)) if pathLengths[i] == pathLengths[0] - 1]
@@ -424,6 +424,7 @@ def allValidStacks( state, row, col, stackInput):
             if not StackCapacity(HowMuchFromStack(stackInput,(row,col), state),(rowDest,colDest), state):
                 continue
             #za hsrc i hdst
+           
             elif not isHeightValid(rowDest,colDest, stackInput, state):
                 continue
             #print("ispunjava sve uslove")
