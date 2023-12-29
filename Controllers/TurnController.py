@@ -404,8 +404,9 @@ def movesToNonEmptyStack(startPosition : (int, int), state : GameState):
             if (stack.is_empty()):
                 continue    
             positionNew = stackToCoor(stack, state)
-            if not (startPosition[0]==positionNew[0] and startPosition[1]==positionNew[1]): #da ne gleda centralni, jer on ima stackove
+            if (startPosition==positionNew or position==positionNew): #da ne gleda centralni, jer on ima stackove i da ne gleda samog sebe
                 continue
+           
             minLen = min(minLen, max(abs(positionNew[0] - position[0]), abs(positionNew[1] - position[1])))
         pathLengths.append(minLen)
     
