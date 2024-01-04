@@ -83,8 +83,8 @@ def intializeGame(maxDimension:int):
     return initializeGameState(dimensions, whoPlaysFirst)
 
 
-def gameIsOver():
-    state:GameState = GameState()
+def gameIsOver(state):
+    #state:GameState = GameState()
     winner:str
     j:int
     j=len(state.stekovi)
@@ -92,8 +92,8 @@ def gameIsOver():
     for stek in state.stekovi:
         if len(stek.array)!=0:
            gameOver=False
-    if((state.playerScore*8<=len(state.stekovi)/2) or (state.cpuScore*8<=len(state.stekovi)/2)):
-        gameOver=False
+    if((state.playerScore*8>=len(state.stekovi)/2) or (state.cpuScore*8>=len(state.stekovi)/2)):
+        gameOver=True
     if(gameOver==True):
         if(state.playerScore>state.cpuScore):
             winner="PLAYER"

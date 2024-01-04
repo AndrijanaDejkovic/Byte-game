@@ -7,7 +7,7 @@ from Controllers.TurnController import *
 
 
 def minMax(state:GameState, maxDepth:int = 1, alpha:tuple = -50000000, beta:tuple = 50000000):
-    print("uso sam u min maks")
+    #print("uso sam u min maks")
     # random.seed(int(time.time())*1000)
     copyState:GameState = copy.deepcopy(state)
     copyState.minMaxGeneratedTurns = []
