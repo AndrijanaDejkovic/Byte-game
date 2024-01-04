@@ -45,12 +45,12 @@ def getValidStackInput(min:int, max:int, inputContext:str):
 def getValidCharToIntInput(min:int, max:int, inputContext:str):  
     inp = -1
     asciiVal = input(colored(f"Enter {inputContext} position: ", 'yellow')).upper()
-    inp = getNumberFromASCII(asciiVal)
-    while(inp < min or inp > max):
+    if len(asciiVal) == 1: inp = getNumberFromASCII(asciiVal)
+    while(len(asciiVal) != 1 or inp < min or inp > max):
       
             print(colored("Invalid input", 'red', attrs=['bold']))
             asciiVal = input(colored(f"Enter {inputContext} position: ", 'yellow')).upper()
-            inp = getNumberFromASCII(asciiVal)
+            if len(asciiVal)==1: inp = getNumberFromASCII(asciiVal)
         
             
     return inp
