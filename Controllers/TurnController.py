@@ -17,33 +17,42 @@ def getNumberFromASCII(asciiChar):
 
 
 def getValidIntInput(min:int, max:int, inputContext:str):
-    inp = -1
-    while(inp < min or inp > max):   #da li je od 0 do dimenzije table
-        try:
-            inp = int(input(colored(f"Enter {inputContext} position: ", 'yellow')))
-        except:
+    #inp = -1
+    inp = input(colored(f"Enter {inputContext} position: ", 'yellow'))
+
+    while( not inp.isdigit() or int(inp) < min or int(inp) > max):   #da li je od 0 do dimenzije table
+            
             print(colored("Invalid input", 'red', attrs=['bold']))
-    return inp - 1
+            inp = (input(colored(f"Enter {inputContext} position: ", 'yellow')))
+        
+    #inp=int(inp)
+    return int(inp)-1
 
 
 def getValidStackInput(min:int, max:int, inputContext:str):
-    inp = -1
-    while(inp < min or inp > max):   #da li je od 0 do dimenzije table
-        try:
-            inp = int(input(colored(f"Enter {inputContext} position: ", 'yellow')))
-        except:
+    #inp = -1
+    inp = (input(colored(f"Enter {inputContext} position: ", 'yellow')))
+
+    while( not inp.isdigit() or int(inp) < min or int(inp) > max):   #da li je od 0 do dimenzije table
+        
             print(colored("Invalid input", 'red', attrs=['bold']))
-    return inp
+            inp = (input(colored(f"Enter {inputContext} position: ", 'yellow')))
+        
+            
+    return int(inp)
 
 
 def getValidCharToIntInput(min:int, max:int, inputContext:str):  
     inp = -1
+    asciiVal = input(colored(f"Enter {inputContext} position: ", 'yellow')).upper()
+    inp = getNumberFromASCII(asciiVal)
     while(inp < min or inp > max):
-        try:
+      
+            print(colored("Invalid input", 'red', attrs=['bold']))
             asciiVal = input(colored(f"Enter {inputContext} position: ", 'yellow')).upper()
             inp = getNumberFromASCII(asciiVal)
-        except:
-            print(colored("Invalid input", 'red', attrs=['bold']))
+        
+            
     return inp
 
 
@@ -52,7 +61,8 @@ def getValidMoveInput():
     move = input(colored("Enter the move (GL, GD, DL, DD): ",'yellow')).upper()
 
     while move not in possible_moves:
-        print(colored("Invalid move! Please enter a valid move.",'red'))
+
+        print(colored("Invalid move! Please enter a valid move.",'red', attrs=['bold']))
         move = input(colored("Enter the move (GL, GD, DL, DD): ",'yellow')).upper()
     return move
 
