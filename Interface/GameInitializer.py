@@ -15,7 +15,7 @@ def getWhoPlaysFirst():
 
 def getTableDimensions(maxDim:int):
     print(colored("\nLet's create the table!", 'yellow'))
-    print(f' Tip: Recommended dimensions are 8x8\n Rule: Max dimensions are {maxDim}x{maxDim}, Minimum dimensions are 5x5!\n')
+    print(f' Tip: Recommended dimensions are 8x8\n Rule: Max dimensions are {maxDim}x{maxDim}, Minimum dimensions are 8x8!\n')
     
     dim = -1
     #parno, maks 16, valjda ne moze manje od 4 zbog onog da treba prva dva steka na pocetku da su prazna, 
